@@ -42,77 +42,69 @@ import {
 
 // ==========================================
 // 1. CUSTOM PACKAGING MENU DATA (Image 1)
+// Every item has a dedicated working URL
 // ==========================================
 const CUSTOM_PACKAGING_ITEMS = [
   // Red-boxed / highlighted by client
   {
     name: 'Custom Food Packaging',
-    category: 'food-bakery',
-    productId: 'custom-frozen-food-boxes',
+    href: '/food-packaging',
     icon: UtensilsCrossed,
     isFeatured: true,
     badgeText: 'Featured',
   },
   {
     name: 'Custom Bakery Boxes',
-    category: 'food-bakery',
-    productId: 'custom-cake-boxes',
+    href: '/bakery-boxes',
     icon: Cake,
     isFeatured: true,
     badgeText: 'Popular',
   },
   {
     name: 'Custom Cosmetic Boxes',
-    category: 'cosmetics',
-    productId: 'custom-lipstick-boxes',
+    href: '/cosmetic-boxes',
     icon: Sparkles,
     isFeatured: true,
     badgeText: 'Featured',
   },
   {
     name: 'Custom Perfume Boxes',
-    category: 'cosmetics',
-    productId: 'custom-perfume-boxes',
+    href: '/custom-perfume-boxes',
     icon: Droplet,
     isFeatured: true,
     badgeText: 'Popular',
   },
   {
     name: 'Custom Rigid Boxes',
-    category: 'rigid-luxury',
-    productId: 'custom-rigid-setup-boxes',
+    href: '/rigid-boxes',
     icon: Package,
     isFeatured: true,
     badgeText: 'Luxury',
   },
   {
     name: 'Custom Luxury Packaging',
-    category: 'rigid-luxury',
-    productId: 'custom-presentation-boxes',
+    href: '/luxury-packaging',
     icon: Crown,
     isFeatured: true,
     badgeText: 'Premium',
   },
   {
     name: 'Custom Jewellery Packaging',
-    category: 'rigid-luxury',
-    productId: 'custom-rigid-slide-boxes',
+    href: '/jewellery-packaging',
     icon: Gem,
     isFeatured: true,
     badgeText: 'High-End',
   },
   {
     name: 'Custom Gift Boxes',
-    category: 'rigid-luxury',
-    productId: 'custom-rigid-gift-boxes',
+    href: '/gift-boxes',
     icon: Gift,
     isFeatured: true,
     badgeText: 'Bestseller',
   },
   {
     name: 'Custom Printed Boxes',
-    category: 'all',
-    productId: 'custom-kraft-boxes',
+    href: '/custom-printed-boxes',
     icon: Box,
     isFeatured: true,
     badgeText: 'Wholesale',
@@ -121,62 +113,52 @@ const CUSTOM_PACKAGING_ITEMS = [
   // Additional categories from Image 1
   {
     name: 'Custom Retail Boxes',
-    category: 'custom-boxes',
-    productId: 'custom-display-boxes',
+    href: '/retail-boxes',
     icon: ShoppingBag,
   },
   {
     name: 'Custom Apparel Boxes',
-    category: 'apparel',
-    productId: 'custom-t-shirt-boxes',
+    href: '/apparel-boxes',
     icon: Shirt,
   },
   {
     name: 'Custom Mailer Packaging',
-    category: 'shipping-mailers',
-    productId: 'custom-mailer-boxes',
+    href: '/custom-mailer-packaging',
     icon: Mail,
   },
   {
     name: 'Custom Cereal Packaging',
-    category: 'food-bakery',
-    productId: 'custom-cereal-boxes',
+    href: '/cereal-packaging',
     icon: Box,
   },
   {
     name: 'Custom Shipping Packaging',
-    category: 'shipping-mailers',
-    productId: 'custom-corrugated-boxes',
+    href: '/custom-shipping-packaging',
     icon: Truck,
   },
   {
     name: 'Custom Metalized Boxes',
-    category: 'rigid-luxury',
-    productId: 'custom-presentation-boxes',
+    href: '/metalized-boxes',
     icon: Layers,
   },
   {
     name: 'Custom Pharma Packaging',
-    category: 'custom-boxes',
-    productId: 'custom-soap-boxes',
+    href: '/pharma-packaging',
     icon: HeartPulse,
   },
   {
     name: 'Custom Electronics Packaging',
-    category: 'custom-boxes',
-    productId: 'custom-two-piece-rigid-boxes',
+    href: '/electronics-packaging',
     icon: Cpu,
   },
   {
     name: 'Custom Soap Packaging',
-    category: 'cosmetics',
-    productId: 'custom-soap-boxes',
+    href: '/soap-packaging',
     icon: Sparkle,
   },
   {
     name: 'Custom Packaging Inserts',
-    category: 'rigid-luxury',
-    productId: 'custom-rigid-boxes-with-inserts',
+    href: '/packaging-inserts',
     icon: Grid,
   },
 ];
@@ -188,59 +170,51 @@ const CUSTOM_PACKAGING_ITEMS = [
 const BOX_BY_STYLE_ITEMS = [
   {
     name: 'Custom Gable Packaging',
+    href: '/custom-gable-packaging',
     desc: 'Handle-top takeout, bakery & gift carrier',
-    productId: 'gable-takeout-box',
     icon: Archive,
-    category: 'food-bakery',
   },
   {
     name: 'Bottom Closure',
+    href: '/bottom-closure-boxes',
     desc: 'Auto-lock bottom & 1-2-3 snap bottom security cartons',
-    productId: 'custom-frozen-food-boxes',
     icon: Box,
-    category: 'custom-boxes',
   },
   {
     name: 'Figure & Pattern Packaging',
+    href: '/figure-and-pattern-packaging',
     desc: 'Custom geometric cuts, pyramid, pillow & sleeve shapes',
-    productId: 'custom-pyramid-boxes',
     icon: Shapes,
-    category: 'custom-boxes',
   },
   {
     name: 'Fold & Assemble Packaging',
+    href: '/fold-and-assemble-packaging',
     desc: 'Roll-end tuck front, flat-packed assembly boxes',
-    productId: 'custom-mailer-boxes',
     icon: Layers,
-    category: 'shipping-mailers',
   },
   {
     name: 'Rectangular Boxes',
+    href: '/rectangular-boxes',
     desc: 'Standard straight-tuck & reverse-tuck product cartons',
-    productId: 'custom-kraft-boxes',
     icon: Box,
-    category: 'all',
   },
   {
     name: 'Showcase Exhibit Packaging',
+    href: '/showcase-exhibit',
     desc: 'Die-cut clear display windows & counter POP stands',
-    productId: 'custom-display-boxes',
     icon: Eye,
-    category: 'custom-boxes',
   },
   {
     name: 'Top Closure Packaging',
+    href: '/top-closure-packaging',
     desc: 'Friction-fit lid, flip-top & roll-over magnetic flaps',
-    productId: 'custom-flip-top-boxes',
     icon: Package,
-    category: 'rigid-luxury',
   },
   {
     name: 'Custom Mailer Packaging',
+    href: '/custom-mailer-packaging',
     desc: 'Heavy-duty corrugated e-commerce subscription box',
-    productId: 'custom-mailer-boxes',
     icon: Mail,
-    category: 'shipping-mailers',
   },
 ];
 
@@ -252,51 +226,51 @@ const BOX_BY_STYLE_ITEMS = [
 const CUSTOM_PRINTING_ITEMS = [
   {
     name: 'Albums',
+    href: '/albums',
     desc: 'Hardcover photo books, portfolio & presentation binders',
     icon: BookOpen,
-    category: 'printing',
   },
   {
     name: 'Magazine Fashion',
+    href: '/magazine-fashion',
     desc: 'Saddle-stitched & perfect-bound fashion catalogues & lookbooks',
     icon: Newspaper,
-    category: 'printing',
   },
   {
     name: 'Inlays & Inserts',
+    href: '/inlays-inserts',
     desc: 'Custom die-cut cardboard & high-density EVA foam inlays',
     icon: Grid,
-    category: 'rigid-luxury',
   },
   {
     name: 'Tag Cards',
+    href: '/tag-cards',
     desc: 'Apparel hang tags, merchandise header cards & price tags',
     icon: Tag,
-    category: 'printing',
   },
   {
     name: 'Wedding Cards',
+    href: '/wedding-cards',
     desc: 'Luxury foil-stamped, embossed & laser-cut wedding suites',
     icon: Heart,
-    category: 'printing',
   },
   {
     name: 'Visiting Cards',
+    href: '/visiting-cards',
     desc: 'Premium business cards, velvet touch lamination & raised foil',
     icon: CreditCard,
-    category: 'printing',
   },
   {
     name: 'Letterhead & Stationery',
+    href: '/letterhead-stationery',
     desc: 'Corporate B2B letterheads, envelopes, folders & invoices',
     icon: FileText,
-    category: 'printing',
   },
   {
     name: 'Stickers and Labels',
+    href: '/stickers-and-labels',
     desc: 'Waterproof vinyl roll labels, die-cut decals & product seals',
     icon: BadgeCheck,
-    category: 'printing',
   },
 ];
 
@@ -306,36 +280,42 @@ const CUSTOM_PRINTING_ITEMS = [
 const PACKAGING_MATERIALS_ITEMS = [
   {
     name: 'Recycled Eco Kraft Board',
+    href: '/kraft-packaging',
     desc: '100% Recyclable virgin brown unbleached kraft paperboard',
     icon: Layers,
     badge: '100% Eco',
   },
   {
     name: 'Corrugated Fluting',
+    href: '/corrugated-packaging',
     desc: 'Single-wall E/B Flute & heavy-duty 5-ply double-wall cartons',
     icon: Package,
     badge: 'High Strength',
   },
   {
     name: 'Rigid Setup Greyboard',
+    href: '/rigid-boxes',
     desc: '1.5mm - 3.0mm luxury dense chipboard for rigid setup boxes',
     icon: Box,
     badge: 'Luxury Grade',
   },
   {
     name: 'Bleached Virgin SBS Board',
+    href: '/cosmetic-boxes',
     desc: 'Ultra-white coated ivory board for high-fidelity color printing',
     icon: Sparkles,
     badge: 'Vivid Print',
   },
   {
     name: 'Metallic Hot Foil & Foilboard',
+    href: '/metalized-boxes',
     desc: 'Reflective gold, silver, copper & holographic hot stamp foil',
     icon: Crown,
     badge: 'Metallic',
   },
   {
     name: 'Clear Window PVC / PET Film',
+    href: '/showcase-exhibit',
     desc: 'Food-grade high-clarity transparent product display film',
     icon: Eye,
     badge: 'Clarity',
@@ -360,17 +340,9 @@ export default function Navbar() {
     }, 180);
   };
 
-  const handleItemClick = (category?: string, productId?: string) => {
+  const handleClose = () => {
     setActiveDropdown(null);
     setMobileMenuOpen(false);
-
-    if (typeof window !== 'undefined') {
-      if (productId) {
-        window.dispatchEvent(new CustomEvent('open_product_modal', { detail: productId }));
-      } else if (category) {
-        window.dispatchEvent(new CustomEvent('select_packaging_category', { detail: category }));
-      }
-    }
   };
 
   // Close dropdown on ESC
@@ -422,7 +394,7 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop Navigation Links with Interactive Dropdowns */}
+          {/* Desktop Navigation Links with Working URLs */}
           <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5 text-[12px] xl:text-[13px] font-bold text-stone-700">
             
             {/* HOME */}
@@ -477,14 +449,14 @@ export default function Navbar() {
                         </p>
                       </div>
 
-                      <a
-                        href="/#categories-section"
-                        onClick={() => handleItemClick('all')}
+                      <Link
+                        href="/custom-printed-boxes"
+                        onClick={handleClose}
                         className="text-xs font-bold text-amber-800 hover:text-amber-950 inline-flex items-center gap-1 group shrink-0"
                       >
                         <span>View All 55+ Boxes</span>
                         <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition" />
-                      </a>
+                      </Link>
                     </div>
 
                     {/* 3-Column Items Grid */}
@@ -492,13 +464,10 @@ export default function Navbar() {
                       {CUSTOM_PACKAGING_ITEMS.map((item, idx) => {
                         const IconComponent = item.icon;
                         return (
-                          <a
+                          <Link
                             key={idx}
-                            href="/#categories-section"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleItemClick(item.category, item.productId);
-                            }}
+                            href={item.href}
+                            onClick={handleClose}
                             className={`flex items-center justify-between p-2 rounded-xl transition group ${
                               item.isFeatured 
                                 ? 'bg-amber-50/50 hover:bg-amber-100/70 border border-amber-200/60' 
@@ -527,7 +496,7 @@ export default function Navbar() {
                                 {item.badgeText}
                               </span>
                             )}
-                          </a>
+                          </Link>
                         );
                       })}
                     </div>
@@ -540,7 +509,7 @@ export default function Navbar() {
                       </div>
                       <Link
                         href="/order"
-                        onClick={() => setActiveDropdown(null)}
+                        onClick={handleClose}
                         className="font-bold text-amber-800 hover:underline"
                       >
                         Direct Factory Order &rarr;
@@ -595,13 +564,10 @@ export default function Navbar() {
                       {BOX_BY_STYLE_ITEMS.map((item, idx) => {
                         const IconComponent = item.icon;
                         return (
-                          <a
+                          <Link
                             key={idx}
-                            href="/#categories-section"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleItemClick(item.category, item.productId);
-                            }}
+                            href={item.href}
+                            onClick={handleClose}
                             className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-amber-50/60 border border-stone-100 hover:border-amber-200 transition group"
                           >
                             <div className="w-8 h-8 rounded-lg bg-stone-100 group-hover:bg-amber-600 group-hover:text-white text-stone-700 flex items-center justify-center shrink-0 transition">
@@ -615,7 +581,7 @@ export default function Navbar() {
                                 {item.desc}
                               </p>
                             </div>
-                          </a>
+                          </Link>
                         );
                       })}
                     </div>
@@ -667,16 +633,18 @@ export default function Navbar() {
                       {PACKAGING_MATERIALS_ITEMS.map((item, idx) => {
                         const IconComponent = item.icon;
                         return (
-                          <div
+                          <Link
                             key={idx}
-                            className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-stone-50 border border-stone-100 transition group"
+                            href={item.href}
+                            onClick={handleClose}
+                            className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-amber-50/60 border border-stone-100 hover:border-amber-200 transition group"
                           >
-                            <div className="w-8 h-8 rounded-lg bg-stone-100 text-stone-700 flex items-center justify-center shrink-0">
+                            <div className="w-8 h-8 rounded-lg bg-stone-100 group-hover:bg-amber-600 group-hover:text-white text-stone-700 flex items-center justify-center shrink-0 transition">
                               <IconComponent className="w-4 h-4" />
                             </div>
                             <div className="min-w-0">
                               <div className="flex items-center gap-1.5">
-                                <h4 className="text-xs font-bold text-stone-900">
+                                <h4 className="text-xs font-bold text-stone-900 group-hover:text-amber-900">
                                   {item.name}
                                 </h4>
                                 <span className="text-[8px] font-mono font-bold px-1.5 py-0.2 rounded bg-stone-200/80 text-stone-700">
@@ -687,7 +655,7 @@ export default function Navbar() {
                                 {item.desc}
                               </p>
                             </div>
-                          </div>
+                          </Link>
                         );
                       })}
                     </div>
@@ -739,7 +707,7 @@ export default function Navbar() {
                       </div>
                       <Link
                         href="/order"
-                        onClick={() => setActiveDropdown(null)}
+                        onClick={handleClose}
                         className="text-xs font-bold text-amber-800 hover:text-amber-950 inline-flex items-center gap-1"
                       >
                         <span>Print Quote &rarr;</span>
@@ -752,8 +720,8 @@ export default function Navbar() {
                         return (
                           <Link
                             key={idx}
-                            href="/order"
-                            onClick={() => setActiveDropdown(null)}
+                            href={item.href}
+                            onClick={handleClose}
                             className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-amber-50/60 border border-stone-100 hover:border-amber-200 transition group"
                           >
                             <div className="w-8 h-8 rounded-lg bg-stone-100 group-hover:bg-amber-600 group-hover:text-white text-stone-700 flex items-center justify-center shrink-0 transition">
@@ -824,7 +792,7 @@ export default function Navbar() {
             {/* Home Link */}
             <Link
               href="/"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={handleClose}
               className="block px-3 py-2 rounded-xl text-stone-800 hover:bg-amber-50 hover:text-amber-900 transition"
             >
               Home
@@ -851,13 +819,10 @@ export default function Navbar() {
                   {CUSTOM_PACKAGING_ITEMS.map((item, idx) => {
                     const IconComponent = item.icon;
                     return (
-                      <a
+                      <Link
                         key={idx}
-                        href="/#categories-section"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleItemClick(item.category, item.productId);
-                        }}
+                        href={item.href}
+                        onClick={handleClose}
                         className="flex items-center justify-between p-2 rounded-lg hover:bg-white text-xs font-semibold text-stone-700 transition"
                       >
                         <div className="flex items-center gap-2">
@@ -869,7 +834,7 @@ export default function Navbar() {
                             {item.badgeText}
                           </span>
                         )}
-                      </a>
+                      </Link>
                     );
                   })}
                 </div>
@@ -897,18 +862,15 @@ export default function Navbar() {
                   {BOX_BY_STYLE_ITEMS.map((item, idx) => {
                     const IconComponent = item.icon;
                     return (
-                      <a
+                      <Link
                         key={idx}
-                        href="/#categories-section"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleItemClick(item.category, item.productId);
-                        }}
+                        href={item.href}
+                        onClick={handleClose}
                         className="flex items-center gap-2 p-2 rounded-lg hover:bg-white text-xs font-semibold text-stone-700 transition"
                       >
                         <IconComponent className="w-3.5 h-3.5 text-stone-500" />
                         <span>{item.name}</span>
-                      </a>
+                      </Link>
                     );
                   })}
                 </div>
@@ -938,8 +900,8 @@ export default function Navbar() {
                     return (
                       <Link
                         key={idx}
-                        href="/order"
-                        onClick={() => setMobileMenuOpen(false)}
+                        href={item.href}
+                        onClick={handleClose}
                         className="flex items-center gap-2 p-2 rounded-lg hover:bg-white text-xs font-semibold text-stone-700 transition"
                       >
                         <IconComponent className="w-3.5 h-3.5 text-stone-500" />
@@ -972,8 +934,10 @@ export default function Navbar() {
                   {PACKAGING_MATERIALS_ITEMS.map((item, idx) => {
                     const IconComponent = item.icon;
                     return (
-                      <div
+                      <Link
                         key={idx}
+                        href={item.href}
+                        onClick={handleClose}
                         className="flex items-center justify-between p-2 rounded-lg bg-white/70 text-xs font-semibold text-stone-700"
                       >
                         <div className="flex items-center gap-2">
@@ -983,7 +947,7 @@ export default function Navbar() {
                         <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-stone-100 text-stone-600">
                           {item.badge}
                         </span>
-                      </div>
+                      </Link>
                     );
                   })}
                 </div>
@@ -993,7 +957,7 @@ export default function Navbar() {
             {/* Direct Links */}
             <Link
               href="/blogs"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={handleClose}
               className="block px-3 py-2 rounded-xl text-stone-800 hover:bg-amber-50 hover:text-amber-900 transition"
             >
               Packaging Blogs & Guides
@@ -1001,7 +965,7 @@ export default function Navbar() {
 
             <Link
               href="/about"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={handleClose}
               className="block px-3 py-2 rounded-xl text-stone-800 hover:bg-amber-50 hover:text-amber-900 transition"
             >
               About Us (42 Years of Excellence)
@@ -1009,7 +973,7 @@ export default function Navbar() {
 
             <Link
               href="/contact"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={handleClose}
               className="block px-3 py-2 rounded-xl text-amber-900 bg-amber-50 hover:bg-amber-100 font-bold transition"
             >
               Contact & Google Map Location
@@ -1018,7 +982,7 @@ export default function Navbar() {
             <div className="pt-2 border-t border-stone-200">
               <Link
                 href="/order"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={handleClose}
                 className="w-full py-3 rounded-full bg-stone-900 text-white text-xs font-bold text-center block shadow-sm"
               >
                 Order Physical Sample Kit ($15)
