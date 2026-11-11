@@ -417,7 +417,7 @@ export default function AIAgentConsultant() {
     }
   };
 
-  if (pathname?.startsWith('/admin')) {
+  if (pathname?.startsWith('/admin') || pathname?.startsWith('/order')) {
     return null;
   }
 

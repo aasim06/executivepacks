@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { X, Check, ShieldCheck, Ruler, Clock, PackageCheck, Download } from 'lucide-react';
+import { X, Check, ShieldCheck, Ruler, Clock, PackageCheck, Download, ArrowRight } from 'lucide-react';
 import { PackagingProduct } from '@/data/categories';
 
 interface ModalProps {
@@ -181,24 +181,25 @@ export default function CategoryModal({ product, onClose }: ModalProps) {
         </div>
 
         {/* Actions Footer */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-stone-200">
-          <div className="flex items-center gap-2 text-xs text-stone-600">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span>Free Sample Box with Bulk Quote</span>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-stone-200">
+          <div className="flex items-center justify-center sm:justify-start gap-1.5 text-xs text-stone-600">
+            <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span className="font-medium">Free Sample Box with Bulk Orders</span>
           </div>
 
-          <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
             <button 
               onClick={onClose}
-              className="flex-1 sm:flex-none px-5 py-2.5 rounded-full border border-stone-300 text-stone-700 text-xs font-bold hover:bg-stone-100 transition"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl sm:rounded-full border border-stone-300 text-stone-700 text-xs font-bold hover:bg-stone-100 transition"
             >
               Close
             </button>
             <a
               href={`/order?productId=${product.id}`}
-              className="flex-1 sm:flex-none px-6 py-2.5 rounded-full bg-stone-900 text-white text-xs font-bold hover:bg-amber-900 transition flex items-center justify-center gap-1.5 shadow-md shadow-stone-900/10"
+              className="w-full sm:w-auto py-3.5 px-6 rounded-xl sm:rounded-full bg-stone-900 hover:bg-amber-800 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-stone-900/10 transition active:scale-[0.98]"
             >
-              <span>Configure & Proceed with Order</span>
+              <span>Configure & Order Now</span>
+              <ArrowRight className="w-4 h-4" />
             </a>
           </div>
         </div>

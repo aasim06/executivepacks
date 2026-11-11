@@ -193,7 +193,7 @@ function OrderContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf8f5] text-stone-900 pb-24">
+    <div className="min-h-screen bg-[#faf8f5] text-stone-900 pb-36 sm:pb-24 overflow-x-hidden">
       
       {/* Top Checkout Header */}
       <header className="sticky top-0 z-40 bg-[#faf8f5]/90 backdrop-blur-xl border-b border-stone-200">
@@ -236,16 +236,16 @@ function OrderContent() {
       </header>
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-6 sm:pt-12">
         
         {/* Title & Product Switcher Bar */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-stone-200">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 sm:mb-8 pb-5 sm:pb-6 border-b border-stone-200">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100/80 text-amber-900 text-xs font-bold mb-2">
               <Sparkles className="w-3.5 h-3.5 text-amber-700" />
               <span>Direct-from-Factory Manufacturing Order</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight">
+            <h1 className="text-xl sm:text-3xl font-extrabold text-stone-900 tracking-tight leading-snug">
               Order Specs & Customization Details
             </h1>
             <p className="text-xs sm:text-sm text-stone-500 mt-1">
@@ -253,9 +253,9 @@ function OrderContent() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-3 shrink-0 w-full md:w-auto">
             {/* Product Switcher Dropdown */}
-            <div className="relative">
+            <div className="relative w-full md:w-auto">
               <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500 block mb-1">
                 Switch Product Line:
               </label>
@@ -263,7 +263,7 @@ function OrderContent() {
                 <select
                   value={selectedProduct.id}
                   onChange={(e) => handleProductChange(e.target.value)}
-                  className="appearance-none bg-white border border-stone-300 rounded-xl px-4 py-2.5 pr-10 text-xs font-bold text-stone-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-800 cursor-pointer"
+                  className="w-full md:w-auto max-w-full appearance-none bg-white border border-stone-300 rounded-xl px-4 py-2.5 pr-10 text-xs font-bold text-stone-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-800 cursor-pointer truncate"
                 >
                   {allProducts.map((p) => (
                     <option key={p.id} value={p.id}>
@@ -294,9 +294,9 @@ function OrderContent() {
           <div className="lg:col-span-7 space-y-8">
             
             {/* SECTION 1: Product Specs & Customization */}
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200/90 shadow-sm">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-stone-200/90 shadow-sm">
               <div className="flex items-center gap-3 pb-4 mb-6 border-b border-stone-100">
-                <span className="w-7 h-7 rounded-full bg-stone-900 text-white font-mono text-xs font-black flex items-center justify-center">
+                <span className="w-7 h-7 rounded-full bg-stone-900 text-white font-mono text-xs font-black flex items-center justify-center shrink-0">
                   1
                 </span>
                 <div>
@@ -344,17 +344,19 @@ function OrderContent() {
                 </div>
 
                 {/* Custom Quantity Input */}
-                <div className="flex items-center gap-3 mt-3">
-                  <span className="text-xs font-semibold text-stone-500">Or custom quantity:</span>
-                  <input
-                    type="number"
-                    min={selectedProduct.moq}
-                    step={50}
-                    value={quantity}
-                    onChange={(e) => setQuantity(Math.max(selectedProduct.moq, Number(e.target.value)))}
-                    className="w-32 px-3 py-1.5 rounded-lg border border-stone-300 font-mono text-xs font-bold text-stone-900 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-700"
-                  />
-                  <span className="text-xs text-stone-500">pcs</span>
+                <div className="flex flex-wrap items-center gap-2 mt-3">
+                  <span className="text-xs font-semibold text-stone-600">Or custom quantity:</span>
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="number"
+                      min={selectedProduct.moq}
+                      step={50}
+                      value={quantity}
+                      onChange={(e) => setQuantity(Math.max(selectedProduct.moq, Number(e.target.value)))}
+                      className="w-28 sm:w-32 px-3 py-2 rounded-xl border border-stone-300 font-mono text-sm sm:text-xs font-bold text-stone-900 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-700"
+                    />
+                    <span className="text-xs font-bold text-stone-500">pcs</span>
+                  </div>
                 </div>
               </div>
 
@@ -371,7 +373,7 @@ function OrderContent() {
                       value={dimensions}
                       onChange={(e) => setDimensions(e.target.value)}
                       placeholder="e.g. 240mm (L) × 150mm (W) × 220mm (H)"
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-stone-300 text-xs font-bold text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-700 bg-stone-50 focus:bg-white"
+                      className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-stone-300 text-sm sm:text-xs font-bold text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-700 bg-stone-50 focus:bg-white"
                     />
                   </div>
                 </div>
@@ -456,9 +458,9 @@ function OrderContent() {
             </div>
 
             {/* SECTION 2: Shipping & Business Details */}
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200/90 shadow-sm">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-stone-200/90 shadow-sm">
               <div className="flex items-center gap-3 pb-4 mb-6 border-b border-stone-100">
-                <span className="w-7 h-7 rounded-full bg-stone-900 text-white font-mono text-xs font-black flex items-center justify-center">
+                <span className="w-7 h-7 rounded-full bg-stone-900 text-white font-mono text-xs font-black flex items-center justify-center shrink-0">
                   2
                 </span>
                 <div>
@@ -480,7 +482,7 @@ function OrderContent() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Full Name"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-xs font-semibold text-stone-900 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-700"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm sm:text-xs font-semibold text-stone-900 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-700"
                   />
                 </div>
 
@@ -492,7 +494,7 @@ function OrderContent() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@company.com"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-xs font-semibold text-stone-900 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-700"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm sm:text-xs font-semibold text-stone-900 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-700"
                   />
                 </div>
 
@@ -503,7 +505,7 @@ function OrderContent() {
                     value={company}
                     onChange={(e) => setCompany(e.target.value)}
                     placeholder="e.g. Artisan Goods LLC"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-xs font-semibold text-stone-900 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-700"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm sm:text-xs font-semibold text-stone-900 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-700"
                   />
                 </div>
 
@@ -514,7 +516,7 @@ function OrderContent() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+1 (555) 000-0000"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-xs font-semibold text-stone-900 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-700"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm sm:text-xs font-semibold text-stone-900 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-700"
                   />
                 </div>
 
@@ -525,7 +527,7 @@ function OrderContent() {
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder="Warehouse / Receiving Dock Address"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-xs font-semibold text-stone-900 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-700"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm sm:text-xs font-semibold text-stone-900 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-700"
                   />
                 </div>
 
@@ -536,7 +538,7 @@ function OrderContent() {
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="City, State"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-xs font-semibold text-stone-900 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-700"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm sm:text-xs font-semibold text-stone-900 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-700"
                   />
                 </div>
 
@@ -547,7 +549,7 @@ function OrderContent() {
                     value={postalCode}
                     onChange={(e) => setPostalCode(e.target.value)}
                     placeholder="Zip Code"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-xs font-semibold text-stone-900 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-700"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm sm:text-xs font-semibold text-stone-900 bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-700"
                   />
                 </div>
               </div>
@@ -562,7 +564,7 @@ function OrderContent() {
                 <button
                   type="submit"
                   disabled={isProcessing}
-                  className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-stone-900 hover:bg-amber-800 text-white font-extrabold text-xs uppercase tracking-wider transition shadow-md flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-xl sm:rounded-full bg-stone-900 hover:bg-amber-800 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition shadow-md flex items-center justify-center gap-2 active:scale-95"
                 >
                   {isProcessing ? (
                     <>
@@ -586,7 +588,7 @@ function OrderContent() {
           <div className="lg:col-span-5 sticky top-24 space-y-6">
             
             {/* Summary Box */}
-            <div className="bg-stone-900 text-white rounded-3xl p-6 sm:p-7 shadow-xl border border-stone-800">
+            <div className="bg-stone-900 text-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-xl border border-stone-800">
               <h3 className="text-base font-extrabold uppercase tracking-wider text-amber-400 mb-4 pb-3 border-b border-stone-800 flex items-center justify-between">
                 <span>Order Summary</span>
                 <span className="text-[10px] font-mono text-stone-400 font-normal">FACTORY BATCH</span>
@@ -599,7 +601,7 @@ function OrderContent() {
                   <img src={selectedProduct.image} alt={selectedProduct.name} className="w-full h-full object-cover" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-extrabold text-white leading-tight">
+                  <h4 className="text-xs sm:text-sm font-extrabold text-white leading-tight">
                     {selectedProduct.name}
                   </h4>
                   <span className="text-[11px] text-stone-400 block mt-0.5">
@@ -651,7 +653,7 @@ function OrderContent() {
                 <div className="flex items-baseline justify-between">
                   <span className="text-sm font-extrabold text-stone-300 uppercase">Total Estimate:</span>
                   <div className="text-right">
-                    <span className="font-mono text-3xl font-black text-amber-400">
+                    <span className="font-mono text-2xl sm:text-3xl font-black text-amber-400">
                       ${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                     <span className="text-[10px] text-stone-400 block">USD • All manufacturing taxes included</span>
@@ -663,7 +665,7 @@ function OrderContent() {
               <button
                 type="submit"
                 disabled={isProcessing}
-                className="w-full py-4 rounded-full bg-amber-600 hover:bg-amber-500 disabled:bg-stone-700 text-white font-extrabold text-xs uppercase tracking-wider transition shadow-lg shadow-amber-600/30 flex items-center justify-center gap-2"
+                className="w-full py-3.5 sm:py-4 rounded-xl sm:rounded-full bg-amber-600 hover:bg-amber-500 disabled:bg-stone-700 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider transition shadow-lg shadow-amber-600/30 flex items-center justify-center gap-2 active:scale-95"
               >
                 {isProcessing ? (
                   <>

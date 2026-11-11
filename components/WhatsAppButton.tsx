@@ -7,8 +7,8 @@ export default function WhatsAppButton() {
   const pathname = usePathname();
   const [showTooltip, setShowTooltip] = useState(false);
   
-  // Don't render customer floating button inside internal Admin Console
-  if (pathname?.startsWith('/admin')) {
+  // Don't render customer floating button inside internal Admin Console or Order Checkout page
+  if (pathname?.startsWith('/admin') || pathname?.startsWith('/order')) {
     return null;
   }
   
