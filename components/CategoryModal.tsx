@@ -58,7 +58,12 @@ export default function CategoryModal({ product, onClose }: ModalProps) {
           <div className="flex flex-col gap-2">
             <div className="relative w-full h-64 sm:h-72 rounded-2xl overflow-hidden bg-stone-100 border border-stone-200 shadow-inner flex items-center justify-center shrink-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={selectedImage || product.image} alt={product.name} className="w-full h-full object-cover object-center transition-all duration-300" />
+              <img 
+                src={selectedImage || product.image} 
+                alt={product.name} 
+                onError={(e) => { (e.target as HTMLImageElement).src = 'https://customboxesmarket.co.uk/wp-content/uploads/2023/12/kraft-boxes-wholesale.webp'; }}
+                className="w-full h-full object-cover object-center transition-all duration-300" 
+              />
             </div>
 
             {/* Thumbnail switcher if hoverImage exists */}

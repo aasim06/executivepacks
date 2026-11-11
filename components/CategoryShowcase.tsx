@@ -279,6 +279,7 @@ export default function CategoryShowcase() {
                   <img
                     src={product.image}
                     alt={product.name}
+                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://customboxesmarket.co.uk/wp-content/uploads/2023/12/kraft-boxes-wholesale.webp'; }}
                     className={`w-full h-full object-cover object-center transition-all duration-500 ease-out ${
                       hasAlternate
                         ? 'group-hover:opacity-0 group-hover:scale-105'
@@ -292,6 +293,7 @@ export default function CategoryShowcase() {
                     <img
                       src={product.hoverImage}
                       alt={`${product.name} alternate view`}
+                      onError={(e) => { (e.target as HTMLImageElement).src = product.image; }}
                       className="absolute inset-0 w-full h-full object-cover object-center opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out"
                       loading="lazy"
                     />

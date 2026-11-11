@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CategoryModal from '@/components/CategoryModal';
+import GetCustomQuote from '@/components/GetCustomQuote';
 import { CategoryMeta } from '@/data/categoriesMeta';
 import { PackagingProduct } from '@/data/categories';
 import { 
@@ -22,7 +23,8 @@ import {
   PhoneCall,
   Sliders,
   Eye,
-  Bookmark
+  Bookmark,
+  Send
 } from 'lucide-react';
 
 interface ClientProps {
@@ -33,6 +35,8 @@ interface ClientProps {
   relatedProducts?: PackagingProduct[];
 }
 
+const FALLBACK_BOX_IMG = 'https://customboxesmarket.co.uk/wp-content/uploads/2023/12/kraft-boxes-wholesale.webp';
+
 export default function CategoryDetailClient({
   isSingleProduct,
   categoryMeta,
@@ -41,15 +45,14 @@ export default function CategoryDetailClient({
   relatedProducts = [],
 }: ClientProps) {
   const [activeModalProduct, setActiveModalProduct] = useState<PackagingProduct | null>(null);
-  const [selectedQty, setSelectedQty] = useState<number>(500);
 
   // If single product page view
   if (isSingleProduct && product) {
     return (
-      <div className="min-h-screen bg-[#faf8f5] text-stone-900 pb-20">
+      <div className="min-h-screen bg-[#faf8f5] text-stone-900 pb-16">
         <Navbar />
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 pb-16 sm:pb-24">
           
           {/* Breadcrumbs */}
           <nav className="flex items-center gap-1.5 text-xs text-stone-500 mb-6 font-medium">
@@ -60,39 +63,28 @@ export default function CategoryDetailClient({
             <span className="text-stone-900 font-bold truncate">{product.name}</span>
           </nav>
 
-          {/* Product Hero Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-16">
+          {/* Product Hero Grid with Sidebar Quote */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16">
             
-            {/* Left: Images */}
-            <div className="lg:col-span-6 space-y-4">
+            {/* Left 7-8 cols: Images & Specs */}
+            <div className="lg:col-span-7 xl:col-span-8 space-y-6">
+              
               <div className="relative aspect-4/3 rounded-3xl overflow-hidden bg-stone-100 border border-stone-200/90 shadow-sm flex items-center justify-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img 
                   src={product.image} 
                   alt={product.name}
+                  onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_BOX_IMG; }}
                   className="w-full h-full object-cover object-center"
                 />
-                <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-white/95 text-stone-900 text-xs font-bold shadow-sm border border-stone-200">
+                <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-emerald-500 text-white text-xs font-bold shadow-md">
+                  IN STOCK
+                </span>
+                <span className="absolute top-4 right-4 px-3 py-1 rounded-full bg-white/95 text-stone-900 text-xs font-bold shadow-sm border border-stone-200">
                   {product.badge}
                 </span>
               </div>
 
-              {product.hoverImage && product.hoverImage !== product.image && (
-                <div className="p-4 rounded-2xl bg-white border border-stone-200 text-xs font-semibold text-stone-600 flex items-center justify-between">
-                  <span>Interactive Open-Box View Available</span>
-                  <button 
-                    onClick={() => setActiveModalProduct(product)}
-                    className="text-amber-800 font-bold hover:underline flex items-center gap-1"
-                  >
-                    <span>View 3D Angle</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Right: Info & Pricing */}
-            <div className="lg:col-span-6 space-y-6">
               <div>
                 <span className="text-xs font-mono font-bold text-amber-800 uppercase tracking-wider bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">
                   {product.categoryLabel}
@@ -109,7 +101,7 @@ export default function CategoryDetailClient({
               <div className="p-5 rounded-2xl bg-white border border-stone-200/90 shadow-xs space-y-3">
                 <div className="flex justify-between items-center pb-2 border-b border-stone-100">
                   <span className="text-xs font-bold uppercase tracking-wider text-stone-500">Tier Wholesale Pricing (Factory Direct)</span>
-                  <span className="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">Moq: {product.moq} pcs</span>
+                  <span className="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">MOQ: {product.moq} pcs</span>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -160,11 +152,16 @@ export default function CategoryDetailClient({
 
             </div>
 
+            {/* Right 4-5 cols: Get Custom Quote Sidebar */}
+            <div className="lg:col-span-5 xl:col-span-4 sticky top-20">
+              <GetCustomQuote defaultProductName={product.name} />
+            </div>
+
           </div>
 
           {/* Related Products */}
           {relatedProducts.length > 0 && (
-            <div className="pt-10 border-t border-stone-200">
+            <div className="pt-10 border-t border-stone-200 mb-16">
               <h2 className="text-xl sm:text-2xl font-extrabold text-stone-900 mb-6">
                 Related {product.categoryLabel} Packaging Boxes
               </h2>
@@ -173,7 +170,15 @@ export default function CategoryDetailClient({
                   <div key={rel.id} className="bg-white rounded-2xl overflow-hidden border border-stone-200/90 shadow-xs hover:shadow-md transition flex flex-col">
                     <div className="relative aspect-square bg-stone-100 overflow-hidden">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={rel.image} alt={rel.name} className="w-full h-full object-cover" />
+                      <img 
+                        src={rel.image} 
+                        alt={rel.name} 
+                        onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_BOX_IMG; }}
+                        className="w-full h-full object-cover" 
+                      />
+                      <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[9px] font-bold">
+                        IN STOCK
+                      </span>
                     </div>
                     <div className="p-3.5 flex-1 flex flex-col justify-between">
                       <div>
@@ -201,12 +206,12 @@ export default function CategoryDetailClient({
     );
   }
 
-  // Category Catalog View
+  // Category Catalog View with Sidebar "Get Custom Quote" (Matching Image 1)
   return (
-    <div className="min-h-screen bg-[#faf8f5] text-stone-900 pb-20">
+    <div className="min-h-screen bg-[#faf8f5] text-stone-900 pb-16">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 pb-16 sm:pb-24">
         
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-1.5 text-xs text-stone-500 mb-6 font-medium">
@@ -249,13 +254,13 @@ export default function CategoryDetailClient({
 
               {/* CTAs */}
               <div className="pt-4 flex flex-wrap items-center gap-3">
-                <Link
-                  href="/order"
+                <a
+                  href="#quote-sidebar"
                   className="px-6 py-3.5 rounded-full bg-stone-900 hover:bg-amber-800 text-white font-bold text-xs uppercase tracking-wider transition shadow-sm flex items-center gap-2"
                 >
                   <span>Request Custom Dieline & Quote</span>
                   <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+                </a>
                 <a
                   href="#catalog-grid"
                   className="px-5 py-3.5 rounded-full border border-stone-300 text-stone-700 font-bold text-xs hover:bg-stone-100 transition"
@@ -272,6 +277,7 @@ export default function CategoryDetailClient({
                 <img 
                   src={categoryMeta?.heroImage} 
                   alt={categoryMeta?.name}
+                  onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_BOX_IMG; }}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent flex items-end p-4">
@@ -286,7 +292,7 @@ export default function CategoryDetailClient({
         </div>
 
         {/* Section Header: Box Models */}
-        <div id="catalog-grid" className="scroll-mt-24 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-stone-200">
+        <div id="catalog-grid" className="scroll-mt-24 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-stone-200">
           <div>
             <h2 className="text-xl sm:text-2xl font-extrabold text-stone-900 tracking-tight">
               Featured {categoryMeta?.name} Box Models
@@ -300,74 +306,92 @@ export default function CategoryDetailClient({
           </span>
         </div>
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-16">
-          {products.map((prod) => (
-            <div 
-              key={prod.id}
-              className="bg-white rounded-2xl overflow-hidden border border-stone-200/90 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col group"
-            >
-              {/* Product Image */}
-              <div className="relative aspect-square bg-stone-100 overflow-hidden cursor-pointer" onClick={() => setActiveModalProduct(prod)}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img 
-                  src={prod.image} 
-                  alt={prod.name}
-                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                />
+        {/* 2-Column Layout matching Image 1: Products on Left + Sticky "Get Custom Quote" on Right */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16">
+          
+          {/* Left Column: Products Grid (Matching Image 1) */}
+          <div className="lg:col-span-7 xl:col-span-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+              {products.map((prod) => (
+                <div 
+                  key={prod.id}
+                  className="bg-white rounded-2xl overflow-hidden border border-stone-200/90 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col group"
+                >
+                  {/* Product Image */}
+                  <div className="relative aspect-square bg-stone-100 overflow-hidden cursor-pointer" onClick={() => setActiveModalProduct(prod)}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img 
+                      src={prod.image} 
+                      alt={prod.name}
+                      onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_BOX_IMG; }}
+                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                    />
 
-                {/* Badge */}
-                <span className={`absolute top-2.5 left-2.5 text-[9px] font-bold px-2 py-0.5 rounded-full border shadow-xs ${prod.badgeColor || 'bg-white text-stone-900 border-stone-200'}`}>
-                  {prod.badge}
-                </span>
-
-                {/* Quick View Pill */}
-                <div className="absolute inset-x-0 bottom-2 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="bg-stone-900/90 text-white text-[10px] font-bold px-3 py-1 rounded-full backdrop-blur-xs shadow-sm flex items-center gap-1">
-                    <Eye className="w-3 h-3" /> Quick Specs
-                  </span>
-                </div>
-              </div>
-
-              {/* Product Info */}
-              <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between space-y-3">
-                <div>
-                  <h3 className="text-xs sm:text-sm font-extrabold text-stone-900 leading-snug line-clamp-2">
-                    {prod.name}
-                  </h3>
-                  <div className="flex items-baseline justify-between mt-1.5">
-                    <span className="font-mono text-xs sm:text-sm font-black text-amber-900">
-                      {prod.startingPrice}
+                    {/* Green "IN STOCK" Badge from Image 1 */}
+                    <span className="absolute top-2.5 right-2.5 text-[9px] font-bold px-2 py-0.5 rounded bg-emerald-600 text-white shadow-xs uppercase tracking-wider">
+                      IN STOCK
                     </span>
-                    <span className="text-[10px] text-stone-500 font-mono">
-                      MOQ: {prod.moq} pcs
+
+                    {/* Left Attribute Badge */}
+                    <span className={`absolute top-2.5 left-2.5 text-[9px] font-bold px-2 py-0.5 rounded-full border shadow-xs ${prod.badgeColor || 'bg-white text-stone-900 border-stone-200'}`}>
+                      {prod.badge}
                     </span>
+
+                    {/* Quick View Pill */}
+                    <div className="absolute inset-x-0 bottom-2 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="bg-stone-900/90 text-white text-[10px] font-bold px-3 py-1 rounded-full backdrop-blur-xs shadow-sm flex items-center gap-1">
+                        <Eye className="w-3 h-3" /> Quick Specs
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Product Info */}
+                  <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between space-y-3">
+                    <div>
+                      <h3 className="text-xs sm:text-sm font-extrabold text-stone-900 leading-snug line-clamp-2">
+                        {prod.name}
+                      </h3>
+                      <div className="flex items-baseline justify-between mt-1.5">
+                        <span className="font-mono text-xs sm:text-sm font-black text-amber-900">
+                          {prod.startingPrice}
+                        </span>
+                        <span className="text-[10px] text-stone-500 font-mono">
+                          MOQ: {prod.moq} pcs
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-stone-100 space-y-1.5">
+                      <Link
+                        href={`/order?productId=${prod.id}`}
+                        className="w-full py-2.5 rounded-xl bg-stone-900 hover:bg-amber-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs"
+                      >
+                        <span>Configure & Order</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => setActiveModalProduct(prod)}
+                        className="w-full py-1.5 text-stone-600 hover:text-stone-900 text-[11px] font-semibold text-center block transition hover:bg-stone-50 rounded-lg"
+                      >
+                        View Dual-Angle Proof
+                      </button>
+                    </div>
                   </div>
                 </div>
-
-                <div className="pt-2 border-t border-stone-100 space-y-1.5">
-                  <Link
-                    href={`/order?productId=${prod.id}`}
-                    className="w-full py-2.5 rounded-xl bg-stone-900 hover:bg-amber-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs"
-                  >
-                    <span>Configure & Order</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => setActiveModalProduct(prod)}
-                    className="w-full py-1.5 text-stone-600 hover:text-stone-900 text-[11px] font-semibold text-center block transition hover:bg-stone-50 rounded-lg"
-                  >
-                    View Dual-Angle Proof
-                  </button>
-                </div>
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* Right Column: Sticky "Get Custom Quote" Form (Matching Image 1) */}
+          <div id="quote-sidebar" className="lg:col-span-5 xl:col-span-4 sticky top-20 scroll-mt-24">
+            <GetCustomQuote defaultProductName={categoryMeta?.name} />
+          </div>
+
         </div>
 
         {/* Manufacturing Materials Guide Section */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200/90 shadow-sm mb-12">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200/90 shadow-sm mb-16">
           <div className="max-w-3xl mb-6">
             <span className="text-xs font-bold uppercase tracking-wider text-amber-800 block mb-1">
               Engineering & Material Standards
@@ -395,14 +419,16 @@ export default function CategoryDetailClient({
           </div>
         </div>
 
-        {/* Bottom Banner */}
-        <div className="bg-stone-900 text-white rounded-3xl p-6 sm:p-10 shadow-xl border border-stone-800 text-center space-y-4">
+        {/* Bottom Banner - Fixed duplicate custom title & Added generous bottom margin (mb-20 sm:mb-28) */}
+        <div className="bg-stone-900 text-white rounded-3xl p-6 sm:p-10 shadow-xl border border-stone-800 text-center space-y-4 mb-20 sm:mb-28">
           <span className="text-xs font-mono font-bold text-amber-400 uppercase tracking-widest bg-stone-800 px-3 py-1 rounded-full border border-stone-700">
             DIRECT MANUFACTURER GUARANTEE
           </span>
+          
           <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight max-w-xl mx-auto">
-            Ready to order custom {categoryMeta?.name}?
+            Ready to order {categoryMeta?.name?.toLowerCase().startsWith('custom') ? categoryMeta?.name : `custom ${categoryMeta?.name}`}?
           </h3>
+          
           <p className="text-xs sm:text-sm text-stone-400 max-w-md mx-auto">
             Receive a free 1:1 CAD dieline proof and digital 3D mockup before volume production begins.
           </p>
