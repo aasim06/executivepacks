@@ -49,7 +49,7 @@ export default function CategoryDetailClient({
   // If single product page view
   if (isSingleProduct && product) {
     return (
-      <div className="min-h-screen bg-[#faf8f5] text-stone-900 pb-16">
+      <div className="min-h-screen bg-[#faf8f5] text-stone-900 flex flex-col justify-between">
         <Navbar />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 pb-16 sm:pb-24">
@@ -209,9 +209,9 @@ export default function CategoryDetailClient({
     );
   }
 
-  // Category Catalog View with Sidebar "Get Custom Quote" (Matching Image 1)
+  // Category Catalog View
   return (
-    <div className="min-h-screen bg-[#faf8f5] text-stone-900 pb-16">
+    <div className="min-h-screen bg-[#faf8f5] text-stone-900 flex flex-col justify-between">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 pb-16 sm:pb-24">
