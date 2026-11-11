@@ -403,8 +403,8 @@ export default function ScrollUnboxing() {
     <section ref={containerRef} id="unboxing-section" className={`relative ${containerHeightClass} bg-[#eae5dc] transition-all`}>
       <div className="sticky top-0 left-0 w-full h-screen overflow-hidden flex items-center justify-center bg-[radial-gradient(circle_at_50%_50%,#faf8f5_0%,#eae4d8_100%)]">
         
-        {/* Top HUD Status Bar */}
-        <div className="absolute top-16 sm:top-24 left-3 right-3 sm:left-4 sm:right-4 max-w-6xl mx-auto flex items-center justify-between pointer-events-none z-20">
+        {/* Top HUD Status Bar (Hidden on mobile screens as requested) */}
+        <div className="hidden sm:flex absolute top-16 sm:top-24 left-3 right-3 sm:left-4 sm:right-4 max-w-6xl mx-auto items-center justify-between pointer-events-none z-20">
           
           {/* Status Label */}
           <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/90 backdrop-blur-md border border-white/50 shadow-xs pointer-events-auto max-w-[70vw] sm:max-w-none truncate">
@@ -430,9 +430,9 @@ export default function ScrollUnboxing() {
           <canvas ref={canvasRef} className="w-full h-full object-contain" />
         </div>
 
-        {/* Floating Annotations (Positioned cleanly below box on mobile) */}
+        {/* Floating Annotations (Hidden on mobile screens as requested, visible on desktop) */}
         {progress < 0.25 && (
-          <div className="absolute bottom-16 sm:bottom-auto sm:top-[32%] left-3 right-3 sm:left-14 sm:right-auto sm:max-w-xs p-3.5 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-white/50 shadow-xl transition-all animate-fade-in pointer-events-none z-20">
+          <div className="hidden sm:block absolute bottom-16 sm:bottom-auto sm:top-[32%] left-3 right-3 sm:left-14 sm:right-auto sm:max-w-xs p-3.5 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-white/50 shadow-xl transition-all animate-fade-in pointer-events-none z-20">
             <span className="text-[9px] sm:text-[10px] font-mono font-bold text-amber-700 tracking-wider uppercase">01 / SEALED</span>
             <h4 className="font-extrabold text-stone-900 text-xs sm:text-sm mt-0.5">Interlocking Gable Handle</h4>
             <p className="text-[11px] sm:text-xs text-stone-600 mt-1">Die-cut handle tabs lock securely without adhesive tape. 450 GSM eco-kraft.</p>
@@ -440,7 +440,7 @@ export default function ScrollUnboxing() {
         )}
 
         {progress > 0.75 && (
-          <div className="absolute bottom-16 sm:bottom-28 left-3 right-3 sm:left-auto sm:right-14 sm:max-w-xs p-3.5 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-white/50 shadow-xl transition-all animate-fade-in pointer-events-none z-20">
+          <div className="hidden sm:block absolute bottom-16 sm:bottom-28 left-3 right-3 sm:left-auto sm:right-14 sm:max-w-xs p-3.5 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-white/50 shadow-xl transition-all animate-fade-in pointer-events-none z-20">
             <span className="text-[9px] sm:text-[10px] font-mono font-bold text-amber-700 tracking-wider uppercase">04 / REVEAL</span>
             <h4 className="font-extrabold text-stone-900 text-xs sm:text-sm mt-0.5">Golden Interior Reveal</h4>
             <p className="text-[11px] sm:text-xs text-stone-600 mt-1">Gable flaps rest fully open to reveal the product inside under warm ambient light.</p>
