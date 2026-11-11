@@ -290,13 +290,13 @@ export default function LogoCustomizer() {
         {/* 2-Column Mockup Workspace */}
         <div className="bg-[#faf8f5] rounded-2xl sm:rounded-3xl border border-stone-200 shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12">
           
-          {/* Left Column: Interactive Controls (5 cols) */}
+          {/* Column 1: Interactive Controls (lg: 5 cols) */}
           <div className="p-4 sm:p-8 lg:p-10 lg:col-span-5 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-stone-200 space-y-5 sm:space-y-7">
-            <div className="space-y-6">
+            <div className="space-y-5 sm:space-y-6">
 
               {/* Step 1: Select Box or Upload Custom Box */}
               <div>
-                <div className="flex items-center justify-between mb-2.5">
+                <div className="flex items-center justify-between mb-2">
                   <label className="text-xs font-bold text-stone-700 uppercase tracking-wider">
                     1. Select Packaging Box:
                   </label>
@@ -323,7 +323,7 @@ export default function LogoCustomizer() {
                         setLogoRotation(box.defaultAngle);
                       }
                     }}
-                    className="w-full appearance-none bg-white border border-stone-300 hover:border-stone-400 focus:border-amber-700 rounded-xl px-4 py-3 text-xs font-bold text-stone-800 shadow-xs focus:outline-none transition pr-10 cursor-pointer"
+                    className="w-full appearance-none bg-white border border-stone-300 hover:border-stone-400 focus:border-amber-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-stone-800 shadow-2xs focus:outline-none transition pr-10 cursor-pointer"
                   >
                     {PRESET_BOXES.map((b) => (
                       <option key={b.id} value={b.id}>
@@ -335,9 +335,9 @@ export default function LogoCustomizer() {
                   <ChevronDown className="w-4 h-4 text-stone-500 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
 
-                {/* Selected Active Box Compact Bar (Only shows the single chosen box) */}
-                <div className="mt-2.5 flex items-center gap-3 p-2.5 rounded-xl bg-white border border-stone-200 shadow-2xs">
-                  <div className="w-12 h-10 rounded-lg overflow-hidden bg-stone-100 shrink-0 border border-stone-200">
+                {/* Selected Active Box Compact Bar */}
+                <div className="mt-2 flex items-center gap-2.5 p-2 rounded-xl bg-white border border-stone-200 shadow-2xs">
+                  <div className="w-10 h-8 rounded-lg overflow-hidden bg-stone-100 shrink-0 border border-stone-200">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img 
                       src={currentBoxImage} 
@@ -353,7 +353,7 @@ export default function LogoCustomizer() {
                       {customBoxUrl ? 'User uploaded custom photo' : (PRESET_BOXES.find(b => b.id === selectedBoxId)?.category || 'Studio Model')}
                     </p>
                   </div>
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 shrink-0">
+                  <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 shrink-0">
                     Selected
                   </span>
                 </div>
@@ -364,11 +364,11 @@ export default function LogoCustomizer() {
                 <label className="text-xs font-bold text-stone-700 uppercase tracking-wider block mb-2">
                   2. Upload Brand Logo (.PNG, .JPG, .SVG):
                 </label>
-                <div className="flex gap-2.5">
-                  <label className="flex-1 flex items-center justify-center gap-2 p-3.5 rounded-xl border-2 border-dashed border-stone-300 hover:border-amber-700 bg-white cursor-pointer transition group">
-                    <Upload className="w-4 h-4 text-stone-400 group-hover:text-amber-700" />
+                <div className="flex gap-2">
+                  <label className="flex-1 flex items-center justify-center gap-2 p-2.5 sm:p-3 rounded-xl border-2 border-dashed border-stone-300 hover:border-amber-700 bg-white cursor-pointer transition group">
+                    <Upload className="w-3.5 h-3.5 text-stone-400 group-hover:text-amber-700" />
                     <span className="text-xs font-bold text-stone-800">
-                      {logoUrl ? 'Change Uploaded Logo' : 'Choose Logo File'}
+                      {logoUrl ? 'Change Logo' : 'Choose Logo File'}
                     </span>
                     <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
                   </label>
@@ -376,7 +376,7 @@ export default function LogoCustomizer() {
                   {logoUrl && (
                     <button
                       onClick={() => setLogoUrl(null)}
-                      className="px-3.5 py-2 text-xs font-bold text-stone-500 hover:text-red-600 bg-stone-100 rounded-xl"
+                      className="px-3 py-2 text-xs font-bold text-stone-500 hover:text-red-600 bg-stone-100 rounded-xl"
                     >
                       Reset
                     </button>
@@ -384,13 +384,13 @@ export default function LogoCustomizer() {
                 </div>
 
                 {!logoUrl && (
-                  <div className="mt-2.5">
+                  <div className="mt-2">
                     <input
                       type="text"
                       value={brandText}
                       onChange={(e) => setBrandText(e.target.value)}
                       placeholder="Or enter brand name stamp..."
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-stone-300 font-bold text-stone-900 text-xs focus:outline-none focus:border-amber-700"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-stone-300 font-bold text-stone-900 text-xs focus:outline-none focus:border-amber-700"
                     />
                   </div>
                 )}
@@ -401,7 +401,7 @@ export default function LogoCustomizer() {
                 <label className="text-xs font-bold text-stone-700 uppercase tracking-wider block mb-2">
                   3. Realistic Print Finish:
                 </label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
                   {[
                     { id: 'black-ink', label: 'Eco Black Ink', desc: 'Blends into fibers' },
                     { id: 'gold-foil', label: 'Gold Hot Foil', desc: 'Metallic shine' },
@@ -411,21 +411,21 @@ export default function LogoCustomizer() {
                     <button
                       key={fin.id}
                       onClick={() => setPrintFinish(fin.id as any)}
-                      className={`p-2.5 rounded-xl text-left border transition ${
+                      className={`p-2 sm:p-2.5 rounded-xl text-left border transition active:scale-95 ${
                         printFinish === fin.id
-                          ? 'border-amber-700 bg-amber-50/80 shadow-sm'
+                          ? 'border-amber-700 bg-amber-50/80 shadow-2xs'
                           : 'border-stone-200 bg-white hover:bg-stone-50'
                       }`}
                     >
                       <span className="block text-xs font-bold text-stone-900">{fin.label}</span>
-                      <span className="block text-[10px] text-stone-500">{fin.desc}</span>
+                      <span className="block text-[9px] sm:text-[10px] text-stone-500">{fin.desc}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Step 4: Scale & Rotation Fine Sliders */}
-              <div className="p-4 rounded-2xl bg-white border border-stone-200/90 space-y-3">
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 space-y-3">
                 <div>
                   <div className="flex justify-between text-xs font-semibold text-stone-600 mb-1">
                     <span className="flex items-center gap-1"><ZoomIn className="w-3.5 h-3.5 text-stone-400" /> Logo Scale:</span>
@@ -461,40 +461,33 @@ export default function LogoCustomizer() {
 
             </div>
 
-            {/* Action Buttons */}
-            <div className="space-y-2.5 pt-4">
+            {/* Clean Desktop Action Buttons Row */}
+            <div className="hidden lg:flex items-center gap-2.5 pt-4">
               <button
                 onClick={handleDownloadMockup}
-                className="w-full py-3.5 rounded-full bg-stone-900 hover:bg-amber-800 text-white font-bold text-xs uppercase tracking-wider text-center transition flex items-center justify-center gap-2 shadow-md shadow-stone-900/15"
+                className="flex-1 py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 active:scale-95 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition"
               >
-                <Download className="w-4 h-4" />
-                <span>Download Client Presentation Mockup (PNG)</span>
+                <Download className="w-4 h-4 text-amber-400" />
+                <span>Download Mockup</span>
               </button>
 
               <a
                 href="#quote-section"
-                className="w-full py-3 rounded-full bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs text-center transition block"
+                className="flex-1 py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-stone-950 font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition text-center"
               >
-                Get Wholesale Quote For This Design →
+                <Sparkles className="w-4 h-4" />
+                <span>Get Factory Quote</span>
               </a>
             </div>
 
           </div>
 
-          {/* Right Column: High-Res Interactive Canvas (7 cols) */}
-          <div className="p-6 sm:p-8 lg:col-span-7 flex flex-col items-center justify-center bg-stone-100 relative min-h-[500px]">
+          {/* Column 2: High-Res Interactive Canvas (lg: 7 cols) */}
+          <div className="p-4 sm:p-6 lg:p-8 lg:col-span-7 flex flex-col items-center justify-center bg-stone-100 relative min-h-[360px] sm:min-h-[500px]">
             
-            {/* Top Instruction Pill */}
-            <div className="absolute top-4 left-4 right-4 flex items-center justify-between text-[11px] font-bold text-stone-600 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-white/60 z-20 shadow-sm pointer-events-none">
-              <span className="flex items-center gap-1.5 text-amber-900">
-                <Move className="w-3.5 h-3.5 text-amber-700" /> Click & Drag logo anywhere on the box to position
-              </span>
-              <span className="hidden sm:inline font-mono">1200 × 900 Ultra-Sharp Canvas</span>
-            </div>
-
-            {/* Canvas Container */}
+            {/* Canvas Container with Integrated Subtle Floating Chip */}
             <div 
-              className="relative w-full max-w-xl aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-stone-300 bg-white cursor-grab active:cursor-grabbing select-none"
+              className="relative w-full max-w-xl aspect-[4/3] rounded-2xl overflow-hidden shadow-xl border border-stone-300 bg-white cursor-grab active:cursor-grabbing select-none"
               onMouseDown={(e) => handlePointerDown(e.clientX, e.clientY)}
               onMouseMove={(e) => handlePointerMove(e.clientX, e.clientY)}
               onMouseUp={handlePointerUp}
@@ -504,12 +497,42 @@ export default function LogoCustomizer() {
               onTouchEnd={handlePointerUp}
             >
               <canvas ref={canvasRef} className="w-full h-full object-cover" />
+
+              {/* Subtle Touch/Drag Indicator Inside Canvas */}
+              <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] font-medium flex items-center gap-1.5 shadow-sm pointer-events-none">
+                <Move className="w-3 h-3 text-amber-300" />
+                <span>Touch & drag logo</span>
+              </div>
+
+              {/* Canvas Resolution Chip */}
+              <div className="hidden sm:block absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-stone-300 text-[10px] font-mono pointer-events-none">
+                1200 × 900 Ultra-Sharp
+              </div>
+            </div>
+
+            {/* Mobile-Only Action Buttons Bar (Clean, Compact, Side-by-Side right below canvas) */}
+            <div className="lg:hidden w-full max-w-xl flex items-center gap-2 mt-3.5">
+              <button
+                onClick={handleDownloadMockup}
+                className="flex-1 py-3 px-3.5 rounded-xl bg-stone-900 active:scale-95 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition"
+              >
+                <Download className="w-4 h-4 text-amber-400 shrink-0" />
+                <span className="truncate">Download Mockup</span>
+              </button>
+
+              <a
+                href="#quote-section"
+                className="flex-1 py-3 px-3.5 rounded-xl bg-amber-500 active:scale-95 text-stone-950 font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition text-center"
+              >
+                <Sparkles className="w-4 h-4 shrink-0" />
+                <span className="truncate">Get Quote</span>
+              </a>
             </div>
 
             {/* Bottom Tip */}
-            <div className="mt-4 text-center text-xs text-stone-500 font-medium flex items-center justify-center gap-1.5">
+            <div className="mt-3 text-center text-[11px] sm:text-xs text-stone-500 font-medium flex items-center justify-center gap-1.5 px-2">
               <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-              <span>Pro Tip: Use <strong className="text-stone-700">Eco Black Ink</strong> for corrugated boxes, or <strong className="text-stone-700">Gold Hot Foil</strong> for luxury gift unboxing.</span>
+              <span>Pro Tip: Use <strong className="text-stone-700">Eco Black Ink</strong> for kraft, or <strong className="text-stone-700">Gold Hot Foil</strong> for luxury gifts.</span>
             </div>
 
           </div>
