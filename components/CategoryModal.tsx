@@ -21,33 +21,36 @@ export default function CategoryModal({ product, onClose }: ModalProps) {
   if (!product) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
       <div 
-        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-3xl shadow-2xl border border-stone-200 p-6 sm:p-8"
+        className="relative w-full sm:max-w-2xl max-h-[88vh] sm:max-h-[90vh] overflow-y-auto bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl border border-stone-200 p-4 sm:p-8"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* iOS Drag Handle Bar on Mobile */}
+        <div className="w-12 h-1.5 rounded-full bg-stone-300 mx-auto mb-3 sm:hidden"></div>
+
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 w-9 h-9 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 flex items-center justify-center transition"
+          className="absolute top-4 sm:top-5 right-4 sm:right-5 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 flex items-center justify-center transition"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
 
         {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-mono font-bold text-amber-800 uppercase tracking-wider bg-amber-50 px-2.5 py-1 rounded-md">
+        <div className="mb-4 sm:mb-6 pr-8">
+          <div className="flex items-center gap-1.5 sm:gap-2 mb-2 flex-wrap">
+            <span className="text-[10px] sm:text-xs font-mono font-bold text-amber-800 uppercase tracking-wider bg-amber-50 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md">
               {product.categoryLabel || 'Custom Packaging'}
             </span>
-            <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${product.badgeColor || 'bg-amber-100 text-amber-800 border-amber-300'}`}>
+            <span className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border ${product.badgeColor || 'bg-amber-100 text-amber-800 border-amber-300'}`}>
               {product.badge || 'Factory Direct'}
             </span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight">
+          <h2 className="text-xl sm:text-3xl font-extrabold text-stone-900 tracking-tight leading-snug">
             {product.name}
           </h2>
-          <p className="text-sm text-stone-500 mt-1 font-medium">{product.tagline || product.description}</p>
+          <p className="text-xs sm:text-sm text-stone-500 mt-1 font-medium">{product.tagline || product.description}</p>
         </div>
 
         {/* Image Preview & Key Specs Grid */}

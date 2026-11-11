@@ -197,25 +197,25 @@ function OrderContent() {
       
       {/* Top Checkout Header */}
       <header className="sticky top-0 z-40 bg-[#faf8f5]/90 backdrop-blur-xl border-b border-stone-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-4">
             <a 
               href="/" 
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-stone-900 transition px-2.5 py-1.5 rounded-lg hover:bg-stone-200/60"
+              className="inline-flex items-center gap-1 text-xs font-bold text-stone-600 hover:text-stone-900 transition p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg hover:bg-stone-200/60"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Back to Catalog</span>
+              <span className="hidden xs:inline sm:inline">Back</span>
             </a>
             <div className="h-4 w-px bg-stone-300 hidden sm:block"></div>
-            <a href="/" className="font-extrabold text-base tracking-tight text-stone-900 uppercase">
+            <a href="/" className="font-extrabold text-sm sm:text-base tracking-tight text-stone-900 uppercase">
               EXECUTIVE <span className="text-amber-800">PACKS</span>
-              <span className="ml-1.5 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-200">
+              <span className="hidden sm:inline-block ml-1.5 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-200">
                 B2B ORDER
               </span>
             </a>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="hidden md:flex items-center gap-2 text-xs font-bold text-stone-600">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
               <span>Direct Manufacturer Guarantee</span>
@@ -226,9 +226,9 @@ function OrderContent() {
               type="button"
               onClick={() => handleProcessOrder()}
               disabled={isProcessing}
-              className="px-5 py-2 rounded-full bg-stone-900 hover:bg-amber-800 text-white font-bold text-xs uppercase tracking-wider transition shadow-sm flex items-center gap-2"
+              className="px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-full bg-stone-900 hover:bg-amber-800 text-white font-bold text-[11px] sm:text-xs uppercase tracking-wider transition shadow-sm flex items-center gap-1.5"
             >
-              <span>Proceed to Order</span>
+              <span>Confirm Order</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>

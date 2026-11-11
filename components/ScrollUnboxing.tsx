@@ -404,46 +404,46 @@ export default function ScrollUnboxing() {
       <div className="sticky top-0 left-0 w-full h-screen overflow-hidden flex items-center justify-center bg-[radial-gradient(circle_at_50%_50%,#faf8f5_0%,#eae4d8_100%)]">
         
         {/* Top HUD Status Bar */}
-        <div className="absolute top-24 left-4 right-4 max-w-6xl mx-auto flex items-center justify-between pointer-events-none z-20">
+        <div className="absolute top-16 sm:top-24 left-3 right-3 sm:left-4 sm:right-4 max-w-6xl mx-auto flex items-center justify-between pointer-events-none z-20">
           
           {/* Status Label */}
-          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/85 backdrop-blur-md border border-white/40 shadow-sm pointer-events-auto">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b]"></span>
-            <span className="text-xs font-bold text-stone-900 tracking-tight">{stageLabel}</span>
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/90 backdrop-blur-md border border-white/50 shadow-xs pointer-events-auto max-w-[70vw] sm:max-w-none truncate">
+            <span className="w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b] shrink-0"></span>
+            <span className="text-[11px] sm:text-xs font-bold text-stone-900 tracking-tight truncate">{stageLabel}</span>
           </div>
 
           {/* Quick HUD Controls */}
-          <div className="flex items-center gap-2 pointer-events-auto">
+          <div className="flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
             {/* Percentage Display */}
-            <div className="px-3 py-1.5 rounded-xl bg-white/85 backdrop-blur-md border border-white/40 shadow-sm flex flex-col items-end">
-              <span className="font-mono text-sm font-extrabold text-amber-900 leading-none">
+            <div className="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-white/90 backdrop-blur-md border border-white/50 shadow-xs flex flex-col items-end">
+              <span className="font-mono text-xs sm:text-sm font-extrabold text-amber-900 leading-none">
                 {Math.round(progress * 100)}%
               </span>
-              <span className="text-[9px] font-bold text-stone-500 tracking-wider">UNBOXED</span>
+              <span className="text-[8px] sm:text-[9px] font-bold text-stone-500 tracking-wider">UNBOXED</span>
             </div>
           </div>
 
         </div>
 
         {/* Realistic High-Res Canvas */}
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center p-2 sm:p-0">
           <canvas ref={canvasRef} className="w-full h-full object-contain" />
         </div>
 
-        {/* Floating Annotations */}
+        {/* Floating Annotations (Positioned cleanly below box on mobile) */}
         {progress < 0.25 && (
-          <div className="absolute top-[32%] left-6 sm:left-14 max-w-xs p-4 rounded-2xl bg-white/80 backdrop-blur-md border border-white/40 shadow-xl transition-all animate-fade-in pointer-events-none">
-            <span className="text-[10px] font-mono font-bold text-amber-700 tracking-wider uppercase">01 / SEALED</span>
-            <h4 className="font-extrabold text-stone-900 text-sm mt-0.5">Interlocking Gable Handle</h4>
-            <p className="text-xs text-stone-600 mt-1">Die-cut handle tabs lock securely without adhesive tape. 450 GSM eco-kraft.</p>
+          <div className="absolute bottom-16 sm:bottom-auto sm:top-[32%] left-3 right-3 sm:left-14 sm:right-auto sm:max-w-xs p-3.5 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-white/50 shadow-xl transition-all animate-fade-in pointer-events-none z-20">
+            <span className="text-[9px] sm:text-[10px] font-mono font-bold text-amber-700 tracking-wider uppercase">01 / SEALED</span>
+            <h4 className="font-extrabold text-stone-900 text-xs sm:text-sm mt-0.5">Interlocking Gable Handle</h4>
+            <p className="text-[11px] sm:text-xs text-stone-600 mt-1">Die-cut handle tabs lock securely without adhesive tape. 450 GSM eco-kraft.</p>
           </div>
         )}
 
         {progress > 0.75 && (
-          <div className="absolute bottom-28 right-6 sm:right-14 max-w-xs p-4 rounded-2xl bg-white/80 backdrop-blur-md border border-white/40 shadow-xl transition-all animate-fade-in pointer-events-none">
-            <span className="text-[10px] font-mono font-bold text-amber-700 tracking-wider uppercase">04 / REVEAL</span>
-            <h4 className="font-extrabold text-stone-900 text-sm mt-0.5">Golden Interior Reveal</h4>
-            <p className="text-xs text-stone-600 mt-1">Gable flaps rest fully open to reveal the product inside under warm ambient light.</p>
+          <div className="absolute bottom-16 sm:bottom-28 left-3 right-3 sm:left-auto sm:right-14 sm:max-w-xs p-3.5 sm:p-4 rounded-2xl bg-white/90 backdrop-blur-md border border-white/50 shadow-xl transition-all animate-fade-in pointer-events-none z-20">
+            <span className="text-[9px] sm:text-[10px] font-mono font-bold text-amber-700 tracking-wider uppercase">04 / REVEAL</span>
+            <h4 className="font-extrabold text-stone-900 text-xs sm:text-sm mt-0.5">Golden Interior Reveal</h4>
+            <p className="text-[11px] sm:text-xs text-stone-600 mt-1">Gable flaps rest fully open to reveal the product inside under warm ambient light.</p>
           </div>
         )}
 

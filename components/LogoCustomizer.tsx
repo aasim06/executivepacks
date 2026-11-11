@@ -271,27 +271,27 @@ export default function LogoCustomizer() {
   };
 
   return (
-    <section id="customizer-section" className="py-24 bg-white border-t border-stone-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="customizer-section" className="py-10 sm:py-24 bg-white border-t border-stone-200">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold uppercase tracking-wider mb-3 shadow-sm">
+        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-14">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-2.5 shadow-xs">
             <Sparkles className="w-3.5 h-3.5 text-amber-700" /> Interactive Mockup Studio
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-stone-900 tracking-tight">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-stone-900 tracking-tight">
             See Your Logo Razor-Sharp on Real Packaging
           </h2>
-          <p className="text-base sm:text-lg text-stone-600 mt-3 font-medium">
+          <p className="text-xs sm:text-base text-stone-600 mt-2 sm:mt-3 font-medium px-2">
             Upload your packaging box or select a studio model below. Drop your logo, drag it to position, and preview authentic factory printing finishes.
           </p>
         </div>
 
         {/* 2-Column Mockup Workspace */}
-        <div className="bg-[#faf8f5] rounded-3xl border border-stone-200 shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+        <div className="bg-[#faf8f5] rounded-2xl sm:rounded-3xl border border-stone-200 shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12">
           
           {/* Left Column: Interactive Controls (5 cols) */}
-          <div className="p-8 sm:p-10 lg:col-span-5 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-stone-200 space-y-7">
+          <div className="p-4 sm:p-8 lg:p-10 lg:col-span-5 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-stone-200 space-y-5 sm:space-y-7">
             <div className="space-y-6">
 
               {/* Step 1: Select Box or Upload Custom Box */}

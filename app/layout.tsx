@@ -1,7 +1,16 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import AIAgentConsultant from "@/components/AIAgentConsultant";
+import MobileBottomNav from "@/components/MobileBottomNav";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: "#0c0a09",
+};
 
 export const metadata: Metadata = {
   title: "Executive Packs | Custom Packaging Manufacturer & Scroll Unboxing Engine",
@@ -23,12 +32,14 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="antialiased">
+      <body className="antialiased selection:bg-amber-100 selection:text-amber-900">
         {children}
-        {/* Global Floating WhatsApp Support Button (Bottom-Right) */}
+        {/* Global Floating WhatsApp Support Button (Above Mobile Nav) */}
         <WhatsAppButton />
-        {/* Global Voice & Chat AI Packaging Consultant Agent (Bottom-Left) */}
+        {/* Global Voice & Chat AI Packaging Consultant Agent (Above Mobile Nav) */}
         <AIAgentConsultant />
+        {/* Native App-Style Bottom Navigation for Mobile Devices */}
+        <MobileBottomNav />
       </body>
     </html>
   );

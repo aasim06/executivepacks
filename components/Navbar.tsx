@@ -10,13 +10,15 @@ export default function Navbar() {
   return (
     <>
       {/* Top Announcement Bar */}
-      <div className="bg-stone-900 text-stone-300 text-[11px] py-1.5 px-4 text-center font-semibold border-b border-stone-800 tracking-wide">
+      <div className="bg-stone-900 text-stone-300 text-[10px] sm:text-[11px] py-1.5 px-3 text-center font-semibold border-b border-stone-800 tracking-wide overflow-hidden">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2 mx-auto sm:mx-0">
-            <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>From Impact to Intact • 42 Years of Excellence (Est. 1984) • No Minimum Order Limit • Pakistan Nationwide</span>
+          <div className="flex items-center gap-1.5 sm:gap-2 mx-auto sm:mx-0 truncate">
+            <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+            <span className="truncate">
+              From Impact to Intact • 42 Yrs Excellence • No MOQ Limit • Pakistan Nationwide
+            </span>
           </div>
-          <div className="hidden md:flex items-center gap-4 text-stone-400 font-medium">
+          <div className="hidden md:flex items-center gap-4 text-stone-400 font-medium shrink-0">
             <span>FSC® Certified</span>
             <span>•</span>
             <span>ISO 9001:2015</span>
@@ -29,15 +31,15 @@ export default function Navbar() {
       </div>
 
       {/* Main Sleek Navigation Header */}
-      <header className="sticky top-0 z-50 bg-[#faf8f5]/85 backdrop-blur-xl border-b border-stone-200/80 shadow-sm transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-50 bg-[#faf8f5]/90 backdrop-blur-xl border-b border-stone-200/80 shadow-xs transition-all">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-4">
           
           {/* Logo - Pure Typography, No 3D / Icon Box */}
-          <Link href="/" className="flex items-center gap-2 shrink-0 group hover:opacity-90 transition" title="Executive Packs Home">
-            <span className="font-extrabold text-lg sm:text-xl tracking-tight text-stone-900 uppercase whitespace-nowrap">
+          <Link href="/" className="flex items-center gap-1.5 sm:gap-2 shrink-0 group hover:opacity-90 transition" title="Executive Packs Home">
+            <span className="font-extrabold text-base sm:text-xl tracking-tight text-stone-900 uppercase whitespace-nowrap">
               EXECUTIVE <span className="text-amber-800">PACKS</span>
             </span>
-            <span className="hidden sm:inline-block text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-100/90 text-amber-900 border border-amber-200 uppercase">
+            <span className="text-[8px] sm:text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-100/90 text-amber-900 border border-amber-200 uppercase">
               B2B
             </span>
           </Link>
@@ -63,7 +65,7 @@ export default function Navbar() {
               href="#categories-section" 
               className="px-3 py-1.5 rounded-lg hover:text-amber-800 hover:bg-stone-100/80 transition whitespace-nowrap"
             >
-              6 Categories
+              Boxes Showcase
             </a>
 
             <a 
@@ -89,7 +91,7 @@ export default function Navbar() {
           </nav>
 
           {/* Action CTAs */}
-          <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             <a
               href="tel:+18005723872"
               className="hidden xl:inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-stone-900 px-2.5 py-1.5 transition"
@@ -100,16 +102,17 @@ export default function Navbar() {
 
             <a
               href="/order"
-              className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 rounded-full bg-stone-900 text-white font-bold text-xs hover:bg-amber-800 transition shadow-sm whitespace-nowrap"
+              className="inline-flex items-center gap-1 sm:gap-1.5 px-3 sm:px-5 py-1.5 sm:py-2 rounded-full bg-stone-900 text-white font-bold text-[11px] sm:text-xs hover:bg-amber-800 transition shadow-xs whitespace-nowrap"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span>Order Sample Kit ($15)</span>
+              <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400 shrink-0" />
+              <span className="hidden xs:inline sm:inline">Order Sample Kit ($15)</span>
+              <span className="xs:hidden sm:hidden">Sample Kit</span>
             </a>
 
             {/* Mobile Menu Hamburger Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg text-stone-700 hover:bg-stone-100 transition"
+              className="lg:hidden p-1.5 sm:p-2 rounded-lg text-stone-700 hover:bg-stone-100 transition"
               aria-label="Toggle Menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

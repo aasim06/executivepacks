@@ -423,31 +423,31 @@ export default function AIAgentConsultant() {
 
   return (
     <>
-      {/* Floating Trigger Button (Bottom Left) */}
+      {/* Floating Trigger Button (Bottom Left, Elevated above Mobile Bottom Nav) */}
       {!isOpen && (
         <button
           onClick={handleOpenWidget}
-          className="fixed bottom-6 left-6 z-50 flex items-center gap-3 px-4 py-3 bg-stone-900 text-white rounded-full shadow-2xl hover:bg-stone-800 transition transform hover:scale-105 group border border-stone-700"
+          className="fixed bottom-20 left-3.5 sm:bottom-6 sm:left-6 z-40 flex items-center gap-2 sm:gap-3 p-2.5 sm:px-4 sm:py-3 bg-stone-900 text-white rounded-full shadow-2xl hover:bg-stone-800 transition transform hover:scale-105 active:scale-95 group border border-stone-700"
           aria-label="Open Executive AI"
         >
-          <div className="relative w-8 h-8 rounded-full bg-amber-600 flex items-center justify-center text-white font-bold shadow-md">
+          <div className="relative w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-amber-600 flex items-center justify-center text-white font-bold shadow-md shrink-0">
             <Bot className="w-4 h-4" />
-            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-stone-900 animate-pulse"></span>
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-400 border border-stone-900 animate-pulse"></span>
           </div>
-          <div className="text-left">
-            <span className="text-xs font-extrabold uppercase tracking-wider text-stone-100 block">
+          <div className="text-left hidden xs:block sm:block pr-1">
+            <span className="text-[11px] sm:text-xs font-extrabold uppercase tracking-wider text-stone-100 block">
               Executive AI
             </span>
-            <p className="text-[10px] text-stone-400 leading-tight">
-              Online • Live Chat & Voice
+            <p className="text-[9px] sm:text-[10px] text-stone-400 leading-tight">
+              Urdu Voice Agent
             </p>
           </div>
         </button>
       )}
 
-      {/* Main AI Agent Modal Window */}
+      {/* Main AI Agent Modal Window (App-like Bottom Sheet on Mobile) */}
       {isOpen && (
-        <div className="fixed bottom-6 left-4 sm:left-6 z-50 w-[92vw] sm:w-[440px] max-h-[85vh] h-[620px] flex flex-col bg-white rounded-3xl shadow-2xl border border-stone-300 overflow-hidden animate-fade-in">
+        <div className="fixed bottom-16 sm:bottom-6 left-2 right-2 sm:left-6 sm:right-auto z-50 w-auto sm:w-[440px] max-h-[84vh] h-[580px] sm:h-[620px] flex flex-col bg-white rounded-3xl shadow-2xl border border-stone-300 overflow-hidden animate-fade-in">
           
           {/* Header */}
           <div className="bg-stone-900 text-white p-3.5 flex items-center justify-between border-b border-stone-800 shrink-0">

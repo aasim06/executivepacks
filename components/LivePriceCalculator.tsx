@@ -51,45 +51,45 @@ export default function LivePriceCalculator() {
   const totalSavings = regularTotal - totalPrice;
 
   return (
-    <section id="quote-section" className="py-24 bg-[#f5efe4] border-t border-stone-300/80 relative overflow-hidden">
+    <section id="quote-section" className="py-10 sm:py-24 bg-[#f5efe4] border-t border-stone-300/80 relative overflow-hidden">
       {/* Decorative Glow */}
       <div className="absolute top-1/3 right-10 w-96 h-96 bg-amber-400/15 rounded-full blur-3xl pointer-events-none"></div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10">
         
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-stone-200 text-stone-900 text-xs font-bold uppercase tracking-wider mb-3 shadow-sm">
+        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-14">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-stone-200 text-stone-900 text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-2.5 shadow-xs">
             <Calculator className="w-3.5 h-3.5 text-amber-700" /> B2B Instant Estimator
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-stone-900 tracking-tight">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-stone-900 tracking-tight">
             Live Dimensional & Volume Pricing
           </h2>
-          <p className="text-base sm:text-lg text-stone-600 mt-3 font-medium">
+          <p className="text-xs sm:text-base text-stone-600 mt-2 sm:mt-3 font-medium px-2">
             Select a category, drag dimensions, and watch wholesale factory unit prices update live with bulk tier discounts.
           </p>
         </div>
 
         {/* Main Interactive Calculator Card */}
-        <div className="bg-white rounded-3xl border border-stone-200 shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-stone-200 shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12">
           
           {/* Left Column: Sliders & Controls (7 cols) */}
-          <div className="p-8 sm:p-10 lg:col-span-7 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-stone-200">
+          <div className="p-4 sm:p-8 lg:p-10 lg:col-span-7 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-stone-200">
             <div>
               
               {/* 1. Category Switcher */}
-              <div className="mb-8">
-                <label className="text-xs font-bold text-stone-500 uppercase tracking-wider block mb-2.5">
+              <div className="mb-6 sm:mb-8">
+                <label className="text-[11px] sm:text-xs font-bold text-stone-500 uppercase tracking-wider block mb-2">
                   1. Select Packaging Category:
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2">
                   {Object.entries(CATEGORY_BASE_RATES).map(([key, item]) => (
                     <button
                       key={key}
                       onClick={() => setSelectedCat(key)}
-                      className={`px-3 py-2.5 rounded-xl text-xs font-bold text-left transition border ${
+                      className={`px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-xl text-xs font-bold text-left transition border active:scale-95 ${
                         selectedCat === key
-                          ? 'bg-stone-900 text-white border-stone-900 shadow-sm'
+                          ? 'bg-stone-900 text-white border-stone-900 shadow-xs'
                           : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
                       }`}
                     >
@@ -100,17 +100,17 @@ export default function LivePriceCalculator() {
               </div>
 
               {/* 2. Custom Dimensions Sliders */}
-              <div className="mb-8 p-5 rounded-2xl bg-stone-50 border border-stone-200/90">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-bold text-stone-700 uppercase tracking-wider flex items-center gap-1.5">
-                    <Ruler className="w-4 h-4 text-amber-700" /> 2. Custom Dimensions (L × W × H in mm):
+              <div className="mb-6 sm:mb-8 p-3.5 sm:p-5 rounded-2xl bg-stone-50 border border-stone-200/90">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[11px] sm:text-xs font-bold text-stone-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <Ruler className="w-3.5 h-3.5 text-amber-700" /> Dimensions (L × W × H):
                   </span>
-                  <span className="font-mono text-xs font-extrabold text-amber-900 bg-amber-100 px-2.5 py-1 rounded-full">
-                    {length} × {width} × {height} mm
+                  <span className="font-mono text-[11px] sm:text-xs font-extrabold text-amber-900 bg-amber-100 px-2 py-0.5 rounded-full">
+                    {length}×{width}×{height} mm
                   </span>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {/* Length */}
                   <div>
                     <div className="flex justify-between text-xs font-semibold text-stone-600 mb-1">
@@ -165,12 +165,12 @@ export default function LivePriceCalculator() {
               </div>
 
               {/* 3. Quantity Slider */}
-              <div className="mb-8">
+              <div className="mb-6 sm:mb-8">
                 <div className="flex justify-between items-center mb-2">
-                  <label className="text-xs font-bold text-stone-500 uppercase tracking-wider">
-                    3. Order Quantity (Wholesale Tier):
+                  <label className="text-[11px] sm:text-xs font-bold text-stone-500 uppercase tracking-wider">
+                    3. Order Quantity:
                   </label>
-                  <span className="font-mono text-sm font-extrabold text-stone-900 bg-stone-100 px-3 py-1 rounded-full border border-stone-200">
+                  <span className="font-mono text-xs sm:text-sm font-extrabold text-stone-900 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200">
                     {quantity.toLocaleString()} pcs
                   </span>
                 </div>
@@ -183,20 +183,20 @@ export default function LivePriceCalculator() {
                   onChange={(e) => setQuantity(Number(e.target.value))}
                   className="w-full h-2.5 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-stone-900"
                 />
-                <div className="flex justify-between text-[11px] font-semibold text-stone-500 mt-1.5">
-                  <span>100 pcs (Sample)</span>
-                  <span>1,000 pcs (Save 36%)</span>
-                  <span>5,000 pcs (Save 58%)</span>
-                  <span>10,000+ pcs (Save 66%)</span>
+                <div className="flex justify-between text-[10px] sm:text-[11px] font-semibold text-stone-500 mt-1">
+                  <span>100 (Sample)</span>
+                  <span>1,000 (-36%)</span>
+                  <span>5,000 (-58%)</span>
+                  <span>10,000+ (-66%)</span>
                 </div>
               </div>
 
               {/* 4. Print Finish Selector */}
               <div>
-                <label className="text-xs font-bold text-stone-500 uppercase tracking-wider block mb-2.5">
+                <label className="text-[11px] sm:text-xs font-bold text-stone-500 uppercase tracking-wider block mb-2">
                   4. Branding & Surface Finish:
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2">
                   {[
                     { id: 'plain', label: 'Plain Kraft', desc: 'No Print' },
                     { id: '1color', label: '1-Color Stamp', desc: 'Eco Ink' },
@@ -206,14 +206,14 @@ export default function LivePriceCalculator() {
                     <button
                       key={fin.id}
                       onClick={() => setPrintFinish(fin.id as any)}
-                      className={`p-3 rounded-xl text-left border transition ${
+                      className={`p-2.5 sm:p-3 rounded-xl text-left border transition active:scale-95 ${
                         printFinish === fin.id
-                          ? 'border-amber-700 bg-amber-50/60 shadow-sm'
+                          ? 'border-amber-700 bg-amber-50/60 shadow-xs'
                           : 'border-stone-200 bg-stone-50 hover:bg-stone-100'
                       }`}
                     >
                       <span className="block text-xs font-bold text-stone-900">{fin.label}</span>
-                      <span className="block text-[10px] text-stone-500 font-medium">{fin.desc}</span>
+                      <span className="block text-[9px] sm:text-[10px] text-stone-500 font-medium">{fin.desc}</span>
                     </button>
                   ))}
                 </div>
@@ -223,7 +223,7 @@ export default function LivePriceCalculator() {
           </div>
 
           {/* Right Column: Live Instant Quote Summary (5 cols) */}
-          <div className="p-8 sm:p-10 lg:col-span-5 bg-gradient-to-b from-stone-900 to-stone-950 text-white flex flex-col justify-between">
+          <div className="p-5 sm:p-8 lg:p-10 lg:col-span-5 bg-gradient-to-b from-stone-900 to-stone-950 text-white flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-stone-800">
                 <span className="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">
