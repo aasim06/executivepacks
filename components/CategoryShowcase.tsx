@@ -100,11 +100,51 @@ export default function CategoryShowcase() {
     window.addEventListener('storage', syncProducts);
     window.addEventListener('executive_catalog_updated', syncProducts);
 
+    // Navbar Dropdown Event Listeners
+    const handleCategoryEvent = (e: any) => {
+      if (e.detail) {
+        setSelectedTag(e.detail);
+        setVisibleCount(12);
+        const el = document.getElementById('categories-section');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+
+    const handleOpenProduct = (e: any) => {
+      if (e.detail) {
+        const prod = products.find(p => p.id === e.detail || p.name.toLowerCase().includes(e.detail.toLowerCase()));
+        if (prod) {
+          setActiveProduct(prod);
+        }
+        const el = document.getElementById('categories-section');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+
+    window.addEventListener('select_packaging_category', handleCategoryEvent);
+    window.addEventListener('open_product_modal', handleOpenProduct);
+
+    // URL Search param check on initial mount
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const cat = params.get('cat');
+      const prodId = params.get('productId') || params.get('product');
+      if (cat) {
+        setSelectedTag(cat);
+      }
+      if (prodId) {
+        const match = PACKAGING_PRODUCTS.find(p => p.id === prodId);
+        if (match) setActiveProduct(match);
+      }
+    }
+
     return () => {
       window.removeEventListener('storage', syncProducts);
       window.removeEventListener('executive_catalog_updated', syncProducts);
+      window.removeEventListener('select_packaging_category', handleCategoryEvent);
+      window.removeEventListener('open_product_modal', handleOpenProduct);
     };
-  }, []);
+  }, [products]);
 
   // Reset pagination count on category/tag change
   useEffect(() => {
