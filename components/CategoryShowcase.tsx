@@ -162,7 +162,7 @@ export default function CategoryShowcase() {
   };
 
   return (
-    <section id="categories-section" className="py-12 sm:py-16 bg-white border-t border-stone-100">
+    <section id="categories-section" className="py-6 sm:py-16 bg-white border-t border-stone-100">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Toast Notification */}

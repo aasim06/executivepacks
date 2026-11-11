@@ -152,7 +152,8 @@ export default function ScrollUnboxing() {
           drawH = h * 0.86 * zoom;
           drawW = drawH * imgRatio;
         } else {
-          drawW = w * 0.90 * zoom;
+          // On mobile portrait: scale box to 1.25x so it fills the screen prominently without massive top/bottom empty voids
+          drawW = w * 1.25 * zoom;
           drawH = drawW / imgRatio;
         }
 
@@ -397,11 +398,11 @@ export default function ScrollUnboxing() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [soundEnabled]);
 
-  const containerHeightClass = speedMode === 'turbo' ? 'h-[135vh]' : 'h-[175vh]';
+  const containerHeightClass = speedMode === 'turbo' ? 'h-[110vh] sm:h-[135vh]' : 'h-[120vh] sm:h-[175vh]';
 
   return (
     <section ref={containerRef} id="unboxing-section" className={`relative ${containerHeightClass} bg-[#eae5dc] transition-all`}>
-      <div className="sticky top-0 left-0 w-full h-screen overflow-hidden flex items-center justify-center bg-[radial-gradient(circle_at_50%_50%,#faf8f5_0%,#eae4d8_100%)]">
+      <div className="sticky top-14 sm:top-0 left-0 w-full h-[calc(100vh-56px)] sm:h-screen overflow-hidden flex items-center justify-center bg-[radial-gradient(circle_at_50%_50%,#faf8f5_0%,#eae4d8_100%)]">
         
         {/* Top HUD Status Bar (Hidden on mobile screens as requested) */}
         <div className="hidden sm:flex absolute top-16 sm:top-24 left-3 right-3 sm:left-4 sm:right-4 max-w-6xl mx-auto items-center justify-between pointer-events-none z-20">

@@ -5,7 +5,7 @@ import { ArrowDown, Sparkles, CheckCircle2, Shield, Factory, Truck } from 'lucid
 
 export default function Hero() {
   return (
-    <section id="hero" className="relative pt-8 pb-14 sm:pt-16 sm:pb-24 overflow-hidden bg-gradient-to-b from-[#faf8f5] via-[#f5efe4] to-[#ede5d8]">
+    <section id="hero" className="relative pt-6 pb-4 sm:pt-16 sm:pb-24 overflow-hidden bg-gradient-to-b from-[#faf8f5] via-[#f5efe4] to-[#ede5d8]">
       {/* Background Decorative Radial */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] sm:w-[700px] h-[350px] sm:h-[700px] bg-amber-400/10 rounded-full blur-3xl pointer-events-none"></div>
 
