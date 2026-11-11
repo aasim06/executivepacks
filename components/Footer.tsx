@@ -115,6 +115,7 @@ export default function Footer() {
                   About Us (42 Years Legacy) <ArrowUpRight className="w-3 h-3" />
                 </Link>
               </li>
+              <li><Link href="/get-a-quote" className="hover:text-amber-400 transition">B2B Custom Quote Studio</Link></li>
               <li><a href="#unboxing-section" className="hover:text-amber-400 transition">Interactive Scroll Unboxing</a></li>
               <li><a href="#customizer-section" className="hover:text-amber-400 transition">Interactive Mockup Studio</a></li>
               <li><a href="#quote-section" className="hover:text-amber-400 transition">Wholesale Tier Calculator</a></li>

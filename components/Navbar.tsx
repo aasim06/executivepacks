@@ -706,7 +706,7 @@ export default function Navbar() {
                         </p>
                       </div>
                       <Link
-                        href="/order"
+                        href="/get-a-quote"
                         onClick={handleClose}
                         className="text-xs font-bold text-amber-800 hover:text-amber-950 inline-flex items-center gap-1"
                       >
@@ -763,6 +763,14 @@ export default function Navbar() {
               <Phone className="w-3.5 h-3.5 text-amber-700" />
               <span>(800) 572-3872</span>
             </a>
+
+            <Link
+              href="/get-a-quote"
+              className="hidden md:inline-flex items-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-amber-800 hover:bg-amber-900 text-white font-bold text-[11px] sm:text-xs transition shadow-xs whitespace-nowrap"
+            >
+              <FileText className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300 shrink-0" />
+              <span>Request a Quote</span>
+            </Link>
 
             <Link
               href="/order"
@@ -977,6 +985,14 @@ export default function Navbar() {
               className="block px-3 py-2 rounded-xl text-amber-900 bg-amber-50 hover:bg-amber-100 font-bold transition"
             >
               Contact & Google Map Location
+            </Link>
+
+            <Link
+              href="/get-a-quote"
+              onClick={handleClose}
+              className="block px-3 py-2.5 rounded-xl text-amber-950 bg-amber-100/90 hover:bg-amber-200 font-extrabold transition text-center border border-amber-300 shadow-xs"
+            >
+              Request Custom Quote (Online Studio) &rarr;
             </Link>
 
             <div className="pt-2 border-t border-stone-200">

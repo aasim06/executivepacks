@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CategoryModal from '@/components/CategoryModal';
-import GetCustomQuote from '@/components/GetCustomQuote';
+import CustomQuoteStudio from '@/components/CustomQuoteStudio';
 import { CategoryMeta } from '@/data/categoriesMeta';
 import { PackagingProduct } from '@/data/categories';
 import { 
@@ -63,12 +63,11 @@ export default function CategoryDetailClient({
             <span className="text-stone-900 font-bold truncate">{product.name}</span>
           </nav>
 
-          {/* Product Hero Grid with Sidebar Quote */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16">
+          {/* Product Hero 2-Column Presentation */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start mb-16">
             
-            {/* Left 7-8 cols: Images & Specs */}
-            <div className="lg:col-span-7 xl:col-span-8 space-y-6">
-              
+            {/* Left 6 cols: Big Premium Image Showcase */}
+            <div className="lg:col-span-6 space-y-4">
               <div className="relative aspect-4/3 rounded-3xl overflow-hidden bg-stone-100 border border-stone-200/90 shadow-sm flex items-center justify-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img 
@@ -85,6 +84,21 @@ export default function CategoryDetailClient({
                 </span>
               </div>
 
+              {/* Quick Spec Highlights */}
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-xs">
+                  <span className="text-stone-500 block text-[11px] font-semibold mb-1">Standard Dieline:</span>
+                  <span className="font-extrabold text-stone-900 block text-xs">{product.dimensions?.standard || 'Custom 1:1 Proof'}</span>
+                </div>
+                <div className="p-4 rounded-2xl bg-white border border-stone-200 shadow-xs">
+                  <span className="text-stone-500 block text-[11px] font-semibold mb-1">Turnaround Time:</span>
+                  <span className="font-extrabold text-stone-900 block text-xs">{product.leadTime || '5-7 Business Days'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right 6 cols: Title, Pricing & CTAs */}
+            <div className="lg:col-span-6 space-y-6">
               <div>
                 <span className="text-xs font-mono font-bold text-amber-800 uppercase tracking-wider bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">
                   {product.categoryLabel}
@@ -120,18 +134,6 @@ export default function CategoryDetailClient({
                 </div>
               </div>
 
-              {/* Specs List */}
-              <div className="grid grid-cols-2 gap-4 text-xs">
-                <div className="p-3.5 rounded-xl bg-white border border-stone-200">
-                  <span className="text-stone-500 block mb-1">Standard Dieline:</span>
-                  <span className="font-bold text-stone-900 block">{product.dimensions?.standard || 'Custom 1:1 Proof'}</span>
-                </div>
-                <div className="p-3.5 rounded-xl bg-white border border-stone-200">
-                  <span className="text-stone-500 block mb-1">Production Lead Time:</span>
-                  <span className="font-bold text-stone-900 block">{product.leadTime || '5-7 Business Days'}</span>
-                </div>
-              </div>
-
               {/* CTA Action Buttons */}
               <div className="pt-2 flex flex-col sm:flex-row gap-3">
                 <Link
@@ -141,22 +143,23 @@ export default function CategoryDetailClient({
                   <span>Configure & Order Now</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
-                <button
-                  type="button"
-                  onClick={() => setActiveModalProduct(product)}
-                  className="py-3.5 px-6 rounded-full border border-stone-300 text-stone-700 font-bold text-xs hover:bg-stone-100 transition text-center"
+                <a
+                  href="#quote-studio"
+                  className="py-3.5 px-6 rounded-full bg-amber-100/80 hover:bg-amber-200/80 text-amber-950 font-bold text-xs uppercase tracking-wider transition text-center border border-amber-300"
                 >
-                  View Full Specs Modal
-                </button>
+                  Bespoke Dimensions Quote &darr;
+                </a>
               </div>
-
             </div>
 
-            {/* Right 4-5 cols: Get Custom Quote Sidebar */}
-            <div className="lg:col-span-5 xl:col-span-4 sticky top-20">
-              <GetCustomQuote defaultProductName={product.name} />
-            </div>
+          </div>
 
+          {/* Full-Width Interactive Custom Quote Studio Section */}
+          <div id="quote-studio" className="scroll-mt-24 mb-16 sm:mb-20">
+            <CustomQuoteStudio 
+              initialProduct={product.name} 
+              initialCategory={product.categoryLabel} 
+            />
           </div>
 
           {/* Related Products */}
@@ -255,7 +258,7 @@ export default function CategoryDetailClient({
               {/* CTAs */}
               <div className="pt-4 flex flex-wrap items-center gap-3">
                 <a
-                  href="#quote-sidebar"
+                  href="#quote-studio"
                   className="px-6 py-3.5 rounded-full bg-stone-900 hover:bg-amber-800 text-white font-bold text-xs uppercase tracking-wider transition shadow-sm flex items-center gap-2"
                 >
                   <span>Request Custom Dieline & Quote</span>
@@ -306,88 +309,84 @@ export default function CategoryDetailClient({
           </span>
         </div>
 
-        {/* 2-Column Layout matching Image 1: Products on Left + Sticky "Get Custom Quote" on Right */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16">
-          
-          {/* Left Column: Products Grid (Matching Image 1) */}
-          <div className="lg:col-span-7 xl:col-span-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-              {products.map((prod) => (
-                <div 
-                  key={prod.id}
-                  className="bg-white rounded-2xl overflow-hidden border border-stone-200/90 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col group"
-                >
-                  {/* Product Image */}
-                  <div className="relative aspect-square bg-stone-100 overflow-hidden cursor-pointer" onClick={() => setActiveModalProduct(prod)}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img 
-                      src={prod.image} 
-                      alt={prod.name}
-                      onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_BOX_IMG; }}
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                    />
+        {/* Full-Width 4-Column Box Models Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-16">
+          {products.map((prod) => (
+            <div 
+              key={prod.id}
+              className="bg-white rounded-2xl overflow-hidden border border-stone-200/90 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col group"
+            >
+              {/* Product Image */}
+              <div className="relative aspect-square bg-stone-100 overflow-hidden cursor-pointer" onClick={() => setActiveModalProduct(prod)}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img 
+                  src={prod.image} 
+                  alt={prod.name}
+                  onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_BOX_IMG; }}
+                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                />
 
-                    {/* Green "IN STOCK" Badge from Image 1 */}
-                    <span className="absolute top-2.5 right-2.5 text-[9px] font-bold px-2 py-0.5 rounded bg-emerald-600 text-white shadow-xs uppercase tracking-wider">
-                      IN STOCK
+                {/* Green "IN STOCK" Badge */}
+                <span className="absolute top-2.5 right-2.5 text-[9px] font-bold px-2 py-0.5 rounded bg-emerald-600 text-white shadow-xs uppercase tracking-wider">
+                  IN STOCK
+                </span>
+
+                {/* Left Attribute Badge */}
+                <span className={`absolute top-2.5 left-2.5 text-[9px] font-bold px-2 py-0.5 rounded-full border shadow-xs ${prod.badgeColor || 'bg-white text-stone-900 border-stone-200'}`}>
+                  {prod.badge}
+                </span>
+
+                {/* Quick View Pill */}
+                <div className="absolute inset-x-0 bottom-2 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="bg-stone-900/90 text-white text-[10px] font-bold px-3 py-1 rounded-full backdrop-blur-xs shadow-sm flex items-center gap-1">
+                    <Eye className="w-3 h-3" /> Quick Specs
+                  </span>
+                </div>
+              </div>
+
+              {/* Product Info */}
+              <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between space-y-3">
+                <div>
+                  <h3 className="text-xs sm:text-sm font-extrabold text-stone-900 leading-snug line-clamp-2">
+                    {prod.name}
+                  </h3>
+                  <div className="flex items-baseline justify-between mt-1.5">
+                    <span className="font-mono text-xs sm:text-sm font-black text-amber-900">
+                      {prod.startingPrice}
                     </span>
-
-                    {/* Left Attribute Badge */}
-                    <span className={`absolute top-2.5 left-2.5 text-[9px] font-bold px-2 py-0.5 rounded-full border shadow-xs ${prod.badgeColor || 'bg-white text-stone-900 border-stone-200'}`}>
-                      {prod.badge}
+                    <span className="text-[10px] text-stone-500 font-mono">
+                      MOQ: {prod.moq} pcs
                     </span>
-
-                    {/* Quick View Pill */}
-                    <div className="absolute inset-x-0 bottom-2 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="bg-stone-900/90 text-white text-[10px] font-bold px-3 py-1 rounded-full backdrop-blur-xs shadow-sm flex items-center gap-1">
-                        <Eye className="w-3 h-3" /> Quick Specs
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Product Info */}
-                  <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between space-y-3">
-                    <div>
-                      <h3 className="text-xs sm:text-sm font-extrabold text-stone-900 leading-snug line-clamp-2">
-                        {prod.name}
-                      </h3>
-                      <div className="flex items-baseline justify-between mt-1.5">
-                        <span className="font-mono text-xs sm:text-sm font-black text-amber-900">
-                          {prod.startingPrice}
-                        </span>
-                        <span className="text-[10px] text-stone-500 font-mono">
-                          MOQ: {prod.moq} pcs
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="pt-2 border-t border-stone-100 space-y-1.5">
-                      <Link
-                        href={`/order?productId=${prod.id}`}
-                        className="w-full py-2.5 rounded-xl bg-stone-900 hover:bg-amber-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs"
-                      >
-                        <span>Configure & Order</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => setActiveModalProduct(prod)}
-                        className="w-full py-1.5 text-stone-600 hover:text-stone-900 text-[11px] font-semibold text-center block transition hover:bg-stone-50 rounded-lg"
-                      >
-                        View Dual-Angle Proof
-                      </button>
-                    </div>
                   </div>
                 </div>
-              ))}
+
+                <div className="pt-2 border-t border-stone-100 space-y-1.5">
+                  <Link
+                    href={`/order?productId=${prod.id}`}
+                    className="w-full py-2.5 rounded-xl bg-stone-900 hover:bg-amber-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs"
+                  >
+                    <span>Configure & Order</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setActiveModalProduct(prod)}
+                    className="w-full py-1.5 text-stone-600 hover:text-stone-900 text-[11px] font-semibold text-center block transition hover:bg-stone-50 rounded-lg"
+                  >
+                    View Dual-Angle Proof
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
+          ))}
+        </div>
 
-          {/* Right Column: Sticky "Get Custom Quote" Form (Matching Image 1) */}
-          <div id="quote-sidebar" className="lg:col-span-5 xl:col-span-4 sticky top-20 scroll-mt-24">
-            <GetCustomQuote defaultProductName={categoryMeta?.name} />
-          </div>
-
+        {/* Dedicated Full-Width Industrial Custom Quote Studio Section */}
+        <div id="quote-studio" className="scroll-mt-24 mb-16 sm:mb-20">
+          <CustomQuoteStudio 
+            initialProduct={categoryMeta?.name} 
+            initialCategory={categoryMeta?.group} 
+          />
         </div>
 
         {/* Manufacturing Materials Guide Section */}
