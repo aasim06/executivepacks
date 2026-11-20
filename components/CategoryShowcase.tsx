@@ -84,7 +84,7 @@ export default function CategoryShowcase() {
   const [products, setProducts] = useState<PackagingProduct[]>(PACKAGING_PRODUCTS);
   const [savedFavorites, setSavedFavorites] = useState<Record<string, boolean>>({});
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [visibleCount, setVisibleCount] = useState<number>(6);
+  const [visibleCount, setVisibleCount] = useState<number>(24);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 
   const tagsScrollRef = useRef<HTMLDivElement>(null);
@@ -106,7 +106,7 @@ export default function CategoryShowcase() {
     const handleCategoryEvent = (e: any) => {
       if (e.detail) {
         setSelectedTag(e.detail);
-        setVisibleCount(12);
+        setVisibleCount(24);
         const el = document.getElementById('categories-section');
         if (el) el.scrollIntoView({ behavior: 'smooth' });
       }
@@ -150,7 +150,7 @@ export default function CategoryShowcase() {
 
   // Reset pagination count on category/tag change
   useEffect(() => {
-    setVisibleCount(6);
+    setVisibleCount(24);
   }, [selectedTag]);
 
   const flashToast = (msg: string) => {
@@ -191,7 +191,7 @@ export default function CategoryShowcase() {
   const handleLoadMore = () => {
     setIsLoadingMore(true);
     setTimeout(() => {
-      setVisibleCount((prev) => prev + 6);
+      setVisibleCount((prev) => prev + 24);
       setIsLoadingMore(false);
     }, 350);
   };
@@ -297,7 +297,7 @@ export default function CategoryShowcase() {
         )}
 
         {/* Showing All Footer Indicator */}
-        {filteredProducts.length > 6 && visibleCount >= filteredProducts.length && (
+        {filteredProducts.length > 24 && visibleCount >= filteredProducts.length && (
           <div className="mt-8 flex justify-center">
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-stone-50 text-stone-500 text-xs font-medium border border-stone-200/60">
               <Check className="w-3.5 h-3.5 text-stone-400" />
