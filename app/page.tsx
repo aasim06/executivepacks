@@ -2,7 +2,6 @@ import React, { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
-import ScrollUnboxing from '@/components/ScrollUnboxing';
 import CategoryShowcase from '@/components/CategoryShowcase';
 import Footer from '@/components/Footer';
 
@@ -24,7 +23,7 @@ const LogoCustomizer = dynamic(() => import('@/components/LogoCustomizer'), {
 });
 
 export const metadata = {
-  title: 'Executive Packs | Custom Packaging Manufacturer & Scroll Unboxing Engine',
+  title: 'Executive Packs | Custom Packaging Manufacturer',
   description: 'Factory-direct custom packaging: Home & Kitchen boxes, E-commerce mailers, Heavy-duty cartons, Jars & Bottles, Wooden baskets, and ThermoCool insulation.',
 };
 
@@ -39,19 +38,16 @@ export default function Home() {
         <Hero />
       </Suspense>
 
-      {/* 3. The Core Scroll Unboxing Experience */}
-      <ScrollUnboxing />
-
-      {/* 4. Industrial Categories Interactive Showcase */}
+      {/* 3. Industrial Categories Interactive Showcase */}
       <CategoryShowcase />
 
-      {/* 5. Live Dimensional & Wholesale Pricing Calculator */}
+      {/* 4. Live Dimensional & Wholesale Pricing Calculator */}
       <LivePriceCalculator />
 
-      {/* 6. Live Brand Logo Upload & 3D Stamper Studio */}
+      {/* 5. Live Brand Logo Upload & 3D Stamper Studio */}
       <LogoCustomizer />
 
-      {/* 7. Footer */}
+      {/* 6. Footer */}
       <Footer />
     </main>
   );

@@ -32,7 +32,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Executive Packs | Custom Packaging Manufacturer & Scroll Unboxing Engine",
+  title: "Executive Packs | Custom Packaging Manufacturer",
   description: "Factory-direct custom packaging: Home & Kitchen boxes, E-commerce mailers, Heavy-duty cartons, Jars & Bottles, Wooden baskets, and ThermoCool insulation.",
 };
 

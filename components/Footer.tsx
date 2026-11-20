@@ -116,7 +116,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li><Link href="/get-a-quote" className="hover:text-amber-400 transition">B2B Custom Quote Studio</Link></li>
-              <li><a href="#unboxing-section" className="hover:text-amber-400 transition">Interactive Scroll Unboxing</a></li>
+              <li><a href="#categories-section" className="hover:text-amber-400 transition">Packaging Showcase</a></li>
               <li><a href="#customizer-section" className="hover:text-amber-400 transition">Interactive Mockup Studio</a></li>
               <li><a href="#quote-section" className="hover:text-amber-400 transition">Wholesale Tier Calculator</a></li>
               <li><a href="/contact" className="hover:text-amber-400 transition">Factory Map & Directions</a></li>
