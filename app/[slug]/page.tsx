@@ -29,6 +29,12 @@ interface PageProps {
   }>;
 }
 
+export async function generateStaticParams() {
+  const categorySlugs = Object.keys(CATEGORIES_META).map((slug) => ({ slug }));
+  const productSlugs = PACKAGING_PRODUCTS.map((p) => ({ slug: p.id }));
+  return [...categorySlugs, ...productSlugs];
+}
+
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
   const meta = CATEGORIES_META[slug];

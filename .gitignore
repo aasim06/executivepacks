@@ -18,6 +18,8 @@
 
 # misc
 .DS_Store
+*.backup.*
+*.bak
 *.pem
 __pycache__/
 *.py[cod]
@@ -32,6 +34,10 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env
+.env.*
+baileys_auth_info/
+.test_debug_auth/
 
 # vercel
 .vercel

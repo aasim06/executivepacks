@@ -176,7 +176,7 @@ export const INITIAL_AI_CONFIG: AIAgentConfig = {
 // Storage keys
 export const STORAGE_KEYS = {
   ORDERS: 'executive_b2b_orders_v1',
-  PRODUCTS: 'executive_catalog_products_v2',
+  PRODUCTS: 'executive_catalog_products_v4',
   INQUIRIES: 'executive_inquiries_v1',
   CONFIG: 'executive_platform_config_v1',
   AI_CONFIG: 'executive_ai_agent_config_v1',
@@ -198,6 +198,31 @@ export const CATEGORY_LABELS: Record<string, string> = {
   'thermocool': 'ThermoCool Insulation',
 };
 
+function sanitizeProductUrls(prods: PackagingProduct[]): PackagingProduct[] {
+  return prods.map(p => {
+    const orig = PACKAGING_PRODUCTS.find(o => o.id === p.id);
+    let img = p.image;
+    if (img?.startsWith('http') && img.includes('customboxesmarket')) {
+      img = `/products/${img.split('/').pop()}`;
+    }
+    if (!img || img.trim() === '' || img.includes('undefined')) {
+      img = orig?.image || '/products/kraft-boxes-wholesale.webp';
+    }
+    let hImg = p.hoverImage;
+    if (hImg?.startsWith('http') && hImg.includes('customboxesmarket')) {
+      hImg = `/products/${hImg.split('/').pop()}`;
+    }
+    if (!hImg || hImg.trim() === '' || hImg.includes('undefined')) {
+      hImg = orig?.hoverImage || img;
+    }
+    return {
+      ...p,
+      image: img,
+      hoverImage: hImg,
+    };
+  });
+}
+
 export function getStoredProducts(): PackagingProduct[] {
   if (typeof window === 'undefined') return PACKAGING_PRODUCTS;
   try {
@@ -205,7 +230,7 @@ export function getStoredProducts(): PackagingProduct[] {
     if (saved) {
       const parsed = JSON.parse(saved);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
+        return sanitizeProductUrls(parsed);
       }
     }
   } catch (e) {

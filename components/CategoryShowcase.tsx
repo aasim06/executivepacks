@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import { CATEGORIES_LIST, PACKAGING_PRODUCTS, PackagingProduct } from '@/data/categories';
 import { getStoredProducts } from '@/lib/adminStore';
-import CategoryModal from './CategoryModal';
+
+const CategoryModal = dynamic(() => import('./CategoryModal'), { ssr: false });
 import { 
   Bookmark, 
   Plus, 
@@ -262,103 +264,16 @@ export default function CategoryShowcase() {
 
         {/* 2-Column Mobile App Grid & 4-Column Desktop Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4">
-          {displayedProducts.map((product) => {
-            const isFavorited = !!savedFavorites[product.id];
-            const hasAlternate = !!product.hoverImage && product.hoverImage !== product.image;
-
-            return (
-              <div
-                key={product.id}
-                onClick={() => setActiveProduct(product)}
-                className="group relative rounded-2xl overflow-hidden bg-white border border-stone-200/80 cursor-pointer shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between active:scale-[0.98]"
-              >
-                {/* Image Container with Smooth Dual-Angle Reveal */}
-                <div className="relative w-full aspect-square overflow-hidden bg-stone-100">
-                  {/* Primary Angle */}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://customboxesmarket.co.uk/wp-content/uploads/2023/12/kraft-boxes-wholesale.webp'; }}
-                    className={`w-full h-full object-cover object-center transition-all duration-500 ease-out ${
-                      hasAlternate
-                        ? 'group-hover:opacity-0 group-hover:scale-105'
-                        : 'group-hover:scale-105'
-                    }`}
-                    loading="lazy"
-                  />
-                  {/* Hover Angle (Open / Inside View) */}
-                  {hasAlternate && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={product.hoverImage}
-                      alt={`${product.name} alternate view`}
-                      onError={(e) => { (e.target as HTMLImageElement).src = product.image; }}
-                      className="absolute inset-0 w-full h-full object-cover object-center opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out"
-                      loading="lazy"
-                    />
-                  )}
-
-                  {/* Dual Angle Pill on Image */}
-                  {hasAlternate && (
-                    <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-[9px] text-white/95 font-medium flex items-center gap-1 opacity-90 group-hover:opacity-0 transition-opacity pointer-events-none">
-                      <Sparkles className="w-2.5 h-2.5 text-amber-300" />
-                      <span className="hidden xs:inline">Inside View</span>
-                    </div>
-                  )}
-
-                  {/* Top-Right Favorite Bookmark Button */}
-                  <button
-                    onClick={(e) => toggleFavorite(e, product.id)}
-                    className={`absolute top-2 right-2 p-1.5 rounded-lg backdrop-blur-md transition ${
-                      isFavorited 
-                        ? 'bg-amber-500 text-stone-950 font-bold' 
-                        : 'bg-white/80 hover:bg-white text-stone-700 opacity-90 group-hover:opacity-100'
-                    }`}
-                    title="Save to Collection"
-                  >
-                    <Bookmark className="w-3 h-3 fill-current" />
-                  </button>
-                </div>
-
-                {/* Card Info Body (Clean Native Shopping App Aesthetic) */}
-                <div className="p-2.5 sm:p-3.5 flex flex-col justify-between flex-1 bg-white">
-                  <div>
-                    <span className="text-[9px] sm:text-[10px] font-mono font-bold text-amber-900 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/50 uppercase truncate max-w-full inline-block">
-                      {product.categoryLabel || 'Custom Box'}
-                    </span>
-                    <h3 className="font-bold text-xs sm:text-sm text-stone-900 truncate mt-1 leading-snug">
-                      {product.name}
-                    </h3>
-                  </div>
-
-                  <div className="mt-2.5 pt-2 border-t border-stone-100 flex items-center justify-between gap-1">
-                    <div>
-                      <span className="text-xs sm:text-sm font-black text-stone-900 block leading-tight">
-                        {product.startingPrice}
-                      </span>
-                      <span className="text-[9px] sm:text-[10px] text-stone-500 font-mono block">
-                        MOQ: {product.moq} pcs
-                      </span>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveProduct(product);
-                      }}
-                      className="p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-stone-100 hover:bg-amber-100 text-stone-800 hover:text-amber-950 text-[10px] font-bold transition flex items-center gap-1 shrink-0"
-                    >
-                      <span>View</span>
-                      <ArrowUpRight className="w-3 h-3" />
-                    </button>
-                  </div>
-                </div>
-
-              </div>
-            );
-          })}
+          {displayedProducts.map((product, idx) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              index={idx}
+              isFavorited={!!savedFavorites[product.id]}
+              onSelect={() => setActiveProduct(product)}
+              onToggleFavorite={(e) => toggleFavorite(e, product.id)}
+            />
+          ))}
         </div>
 
         {/* Full-Width Unsplash-Style Load More Button */}
@@ -412,5 +327,126 @@ export default function CategoryShowcase() {
         onClose={() => setActiveProduct(null)}
       />
     </section>
+  );
+}
+
+function ProductCard({
+  product,
+  index,
+  isFavorited,
+  onSelect,
+  onToggleFavorite,
+}: {
+  product: PackagingProduct;
+  index: number;
+  isFavorited: boolean;
+  onSelect: () => void;
+  onToggleFavorite: (e: React.MouseEvent) => void;
+}) {
+  const [isHovered, setIsHovered] = useState(false);
+  const hasAlternate = !!product.hoverImage && product.hoverImage !== product.image;
+
+  return (
+    <div
+      onClick={onSelect}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="group relative rounded-2xl overflow-hidden bg-white border border-stone-200/80 cursor-pointer shadow-xs hover:shadow-xl transition-all duration-200 flex flex-col justify-between active:scale-[0.98] will-change-transform"
+    >
+      {/* Image Container with Smooth Dual-Angle Reveal */}
+      <div className="relative w-full aspect-square overflow-hidden bg-stone-100">
+        {/* Primary Angle */}
+        <img
+          src={product.image}
+          alt={product.name}
+          onError={(e) => {
+            const target = e.currentTarget;
+            if (!target.dataset.fallback) {
+              target.dataset.fallback = 'true';
+              target.src = '/products/kraft-boxes-wholesale.webp';
+            }
+          }}
+          className={`w-full h-full object-cover object-center transition-all duration-300 ease-out ${
+            hasAlternate && isHovered
+              ? 'opacity-0 scale-105'
+              : 'opacity-100 group-hover:scale-105'
+          }`}
+          loading={index < 8 ? 'eager' : 'lazy'}
+          decoding="async"
+        />
+
+        {/* Hover Angle (Open / Inside View) - loaded on demand on hover */}
+        {hasAlternate && isHovered && (
+          <img
+            src={product.hoverImage}
+            alt={`${product.name} alternate view`}
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (target.src !== product.image) {
+                target.src = product.image;
+              }
+            }}
+            className="absolute inset-0 w-full h-full object-cover object-center opacity-100 scale-105 transition-all duration-300 ease-out"
+            decoding="async"
+          />
+        )}
+
+        {/* Dual Angle Pill on Image */}
+        {hasAlternate && (
+          <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-[9px] text-white/95 font-medium flex items-center gap-1 opacity-90 group-hover:opacity-0 transition-opacity pointer-events-none">
+            <Sparkles className="w-2.5 h-2.5 text-amber-300" />
+            <span className="hidden xs:inline">Inside View</span>
+          </div>
+        )}
+
+        {/* Top-Right Favorite Bookmark Button */}
+        <button
+          onClick={onToggleFavorite}
+          className={`absolute top-2 right-2 p-1.5 rounded-lg backdrop-blur-md transition ${
+            isFavorited 
+              ? 'bg-amber-500 text-stone-950 font-bold' 
+              : 'bg-white/80 hover:bg-white text-stone-700 opacity-90 group-hover:opacity-100'
+          }`}
+          title="Save to Collection"
+        >
+          <Bookmark className="w-3 h-3 fill-current" />
+        </button>
+      </div>
+
+      {/* Card Info Body */}
+      <div className="p-2.5 sm:p-3.5 flex flex-col justify-between flex-1 bg-white">
+        <div>
+          <span className="text-[9px] sm:text-[10px] font-mono font-bold text-amber-900 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/50 uppercase truncate max-w-full inline-block">
+            {product.categoryLabel || 'Custom Box'}
+          </span>
+          <h3 className="font-bold text-xs sm:text-sm text-stone-900 truncate mt-1 leading-snug">
+            {product.name}
+          </h3>
+        </div>
+
+        <div className="mt-2.5 pt-2 border-t border-stone-100 flex items-center justify-between gap-1">
+          <div>
+            <span className="text-xs sm:text-sm font-black text-stone-900 block leading-tight">
+              {product.startingPrice}
+            </span>
+            <span className="text-[9px] sm:text-[10px] text-stone-500 font-mono block">
+              MOQ: {product.moq} pcs
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect();
+            }}
+            className="p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-stone-100 hover:bg-amber-100 text-stone-800 hover:text-amber-950 text-[10px] font-bold transition flex items-center gap-1 shrink-0"
+          >
+            <span>View</span>
+            <ArrowUpRight className="w-3 h-3" />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

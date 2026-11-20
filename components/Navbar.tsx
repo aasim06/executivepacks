@@ -2,13 +2,13 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { 
   ChevronDown, 
   Sparkles, 
   ShieldCheck, 
   Menu, 
   X, 
-  Phone, 
   ArrowRight,
   UtensilsCrossed,
   Cake,
@@ -323,6 +323,7 @@ const PACKAGING_MATERIALS_ITEMS = [
 ];
 
 export default function Navbar() {
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<'packaging' | 'style' | 'printing' | 'materials' | null>(null);
   const [mobileExpandedSection, setMobileExpandedSection] = useState<'packaging' | 'style' | 'printing' | 'materials' | null>(null);
@@ -332,6 +333,18 @@ export default function Navbar() {
   const handleMouseEnter = (name: 'packaging' | 'style' | 'printing' | 'materials') => {
     if (dropdownTimeoutRef.current) clearTimeout(dropdownTimeoutRef.current);
     setActiveDropdown(name);
+    // Instant Route Prefetch on Hover for 0ms Click Transitions
+    try {
+      if (name === 'packaging') {
+        CUSTOM_PACKAGING_ITEMS.forEach(it => router.prefetch(it.href));
+      } else if (name === 'style') {
+        BOX_BY_STYLE_ITEMS.forEach(it => router.prefetch(it.href));
+      } else if (name === 'printing') {
+        CUSTOM_PRINTING_ITEMS.forEach(it => router.prefetch(it.href));
+      } else if (name === 'materials') {
+        PACKAGING_MATERIALS_ITEMS.forEach(it => router.prefetch(it.href));
+      }
+    } catch {}
   };
 
   const handleMouseLeave = () => {
@@ -756,14 +769,6 @@ export default function Navbar() {
 
           {/* Action CTAs */}
           <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-            <a
-              href="tel:+18005723872"
-              className="hidden 2xl:inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-stone-900 px-2 py-1.5 transition"
-            >
-              <Phone className="w-3.5 h-3.5 text-amber-700" />
-              <span>(800) 572-3872</span>
-            </a>
-
             <Link
               href="/get-a-quote"
               className="hidden md:inline-flex items-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-amber-800 hover:bg-amber-900 text-white font-bold text-[11px] sm:text-xs transition shadow-xs whitespace-nowrap"

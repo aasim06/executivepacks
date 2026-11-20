@@ -25,7 +25,7 @@ const PRESET_BOXES = [
   {
     id: 'black-mailer',
     name: 'Luxury Obsidian Black Box',
-    image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=1200&q=80',
+    image: '/assets/black-mailer.jpg',
     category: 'Luxury Fashion',
     defaultPos: { x: 0.50, y: 0.45 },
     defaultScale: 0.32,
@@ -34,7 +34,7 @@ const PRESET_BOXES = [
   {
     id: 'master-carton',
     name: 'Heavy-Duty Master Carton',
-    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80',
+    image: '/assets/master-carton.jpg',
     category: 'Cartons & Logistics',
     defaultPos: { x: 0.50, y: 0.55 },
     defaultScale: 0.36,
@@ -43,7 +43,7 @@ const PRESET_BOXES = [
   {
     id: 'wooden-crate',
     name: 'Artisan Solid Pine Crate',
-    image: 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=1200&q=80',
+    image: '/assets/wooden-crate.jpg',
     category: 'Wooden Hampers',
     defaultPos: { x: 0.50, y: 0.50 },
     defaultScale: 0.34,

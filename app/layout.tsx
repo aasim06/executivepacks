@@ -1,8 +1,27 @@
+import React, { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
+import dynamic from "next/dynamic";
+import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import AIAgentConsultant from "@/components/AIAgentConsultant";
 import MobileBottomNav from "@/components/MobileBottomNav";
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-plus-jakarta",
+  display: "swap",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+  variable: "--font-space-grotesk",
+  display: "swap",
+});
+
+
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -23,21 +42,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="antialiased selection:bg-amber-100 selection:text-amber-900">
+    <html lang="en" className={`${plusJakarta.variable} ${spaceGrotesk.variable}`} suppressHydrationWarning>
+      <body className="antialiased selection:bg-amber-100 selection:text-amber-900" suppressHydrationWarning>
         {children}
         {/* Global Floating WhatsApp Support Button (Above Mobile Nav) */}
         <WhatsAppButton />
         {/* Global Voice & Chat AI Packaging Consultant Agent (Above Mobile Nav) */}
-        <AIAgentConsultant />
+        <Suspense fallback={null}>
+          <AIAgentConsultant />
+        </Suspense>
         {/* Native App-Style Bottom Navigation for Mobile Devices */}
         <MobileBottomNav />
       </body>

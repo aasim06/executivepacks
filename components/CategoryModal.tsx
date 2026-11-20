@@ -61,8 +61,10 @@ export default function CategoryModal({ product, onClose }: ModalProps) {
               <img 
                 src={selectedImage || product.image} 
                 alt={product.name} 
-                onError={(e) => { (e.target as HTMLImageElement).src = 'https://customboxesmarket.co.uk/wp-content/uploads/2023/12/kraft-boxes-wholesale.webp'; }}
-                className="w-full h-full object-cover object-center transition-all duration-300" 
+                onError={(e) => { (e.target as HTMLImageElement).src = '/products/kraft-boxes-wholesale.webp'; }}
+                className="w-full h-full object-cover object-center transition-all duration-200" 
+                decoding="async"
+                loading="eager"
               />
             </div>
 

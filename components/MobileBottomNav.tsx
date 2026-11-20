@@ -9,24 +9,31 @@ export default function MobileBottomNav() {
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState('home');
 
-  // Track active section when scrolling
+  // Track active section when scrolling with rAF throttling
   useEffect(() => {
     if (pathname !== '/') return;
 
+    let ticking = false;
     const handleScroll = () => {
-      const scrollPos = window.scrollY + 200;
-      const categoriesEl = document.getElementById('categories-section');
-      const quoteEl = document.getElementById('quote-section');
-      const customizerEl = document.getElementById('customizer-section');
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollPos = window.scrollY + 200;
+          const categoriesEl = document.getElementById('categories-section');
+          const quoteEl = document.getElementById('quote-section');
+          const customizerEl = document.getElementById('customizer-section');
 
-      if (customizerEl && scrollPos >= customizerEl.offsetTop) {
-        setActiveTab('studio');
-      } else if (quoteEl && scrollPos >= quoteEl.offsetTop) {
-        setActiveTab('calc');
-      } else if (categoriesEl && scrollPos >= categoriesEl.offsetTop) {
-        setActiveTab('boxes');
-      } else {
-        setActiveTab('home');
+          if (customizerEl && scrollPos >= customizerEl.offsetTop) {
+            setActiveTab('studio');
+          } else if (quoteEl && scrollPos >= quoteEl.offsetTop) {
+            setActiveTab('calc');
+          } else if (categoriesEl && scrollPos >= categoriesEl.offsetTop) {
+            setActiveTab('boxes');
+          } else {
+            setActiveTab('home');
+          }
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 

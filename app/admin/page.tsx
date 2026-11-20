@@ -1426,7 +1426,7 @@ export default function AdminDashboardPage() {
                       categoryLabel: 'E-Commerce Mailers',
                       tagline: '',
                       description: '',
-                      image: 'https://images.unsplash.com/photo-1607344645866-009c320c5ab8?auto=format&fit=crop&w=1200&q=80',
+                      image: '/products/kraft-boxes-wholesale.webp',
                       badge: 'Drop-Tested 32 ECT',
                       badgeColor: 'bg-amber-100 text-amber-800',
                       moq: 250,

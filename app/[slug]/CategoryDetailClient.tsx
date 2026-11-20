@@ -2,10 +2,18 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import CategoryModal from '@/components/CategoryModal';
-import CustomQuoteStudio from '@/components/CustomQuoteStudio';
+
+const CategoryModal = dynamic(() => import('@/components/CategoryModal'), { ssr: false });
+const CustomQuoteStudio = dynamic(() => import('@/components/CustomQuoteStudio'), {
+  loading: () => (
+    <div className="p-8 text-center bg-white rounded-3xl border border-stone-200">
+      <div className="text-xs font-mono font-bold text-stone-500 animate-pulse">Loading Custom Quote Studio...</div>
+    </div>
+  ),
+});
 import { CategoryMeta } from '@/data/categoriesMeta';
 import { PackagingProduct } from '@/data/categories';
 import { 
@@ -35,7 +43,7 @@ interface ClientProps {
   relatedProducts?: PackagingProduct[];
 }
 
-const FALLBACK_BOX_IMG = 'https://customboxesmarket.co.uk/wp-content/uploads/2023/12/kraft-boxes-wholesale.webp';
+const FALLBACK_BOX_IMG = '/products/kraft-boxes-wholesale.webp';
 
 export default function CategoryDetailClient({
   isSingleProduct,

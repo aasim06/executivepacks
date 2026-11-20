@@ -1,11 +1,27 @@
-import React from 'react';
+import React, { Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import ScrollUnboxing from '@/components/ScrollUnboxing';
 import CategoryShowcase from '@/components/CategoryShowcase';
-import LivePriceCalculator from '@/components/LivePriceCalculator';
-import LogoCustomizer from '@/components/LogoCustomizer';
 import Footer from '@/components/Footer';
+
+// Code-split below-the-fold interactive modules
+const LivePriceCalculator = dynamic(() => import('@/components/LivePriceCalculator'), {
+  loading: () => (
+    <div className="py-24 bg-[#f5efe4] flex items-center justify-center">
+      <div className="text-xs font-mono font-bold text-stone-500 animate-pulse">Loading B2B Instant Estimator...</div>
+    </div>
+  ),
+});
+
+const LogoCustomizer = dynamic(() => import('@/components/LogoCustomizer'), {
+  loading: () => (
+    <div className="py-24 bg-stone-900 flex items-center justify-center">
+      <div className="text-xs font-mono font-bold text-stone-400 animate-pulse">Loading 3D Customizer Studio...</div>
+    </div>
+  ),
+});
 
 export const metadata = {
   title: 'Executive Packs | Custom Packaging Manufacturer & Scroll Unboxing Engine',
@@ -19,12 +35,14 @@ export default function Home() {
       <Navbar />
 
       {/* 2. Hero Section */}
-      <Hero />
+      <Suspense fallback={<div className="h-[100vh] bg-[#101014]" />}>
+        <Hero />
+      </Suspense>
 
-      {/* 3. The Core Scroll Unboxing Experience (Canvas & Three.js 3D) */}
+      {/* 3. The Core Scroll Unboxing Experience */}
       <ScrollUnboxing />
 
-      {/* 4. Step 1: The 6 Industrial Categories Interactive Showcase (High-Res Unsplash Photography) */}
+      {/* 4. Industrial Categories Interactive Showcase */}
       <CategoryShowcase />
 
       {/* 5. Live Dimensional & Wholesale Pricing Calculator */}
