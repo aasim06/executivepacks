@@ -132,9 +132,9 @@ const CUSTOM_PACKAGING_ITEMS = [
     icon: Box,
   },
   {
-    name: 'Custom Shipping Packaging',
-    href: '/custom-shipping-packaging',
-    icon: Truck,
+    name: 'Custom Retail Packaging',
+    href: '/custom-boxes',
+    icon: ShoppingBag,
   },
   {
     name: 'Custom Metalized Boxes',

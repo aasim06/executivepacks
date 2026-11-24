@@ -54,9 +54,9 @@ const GALLERY_TAGS = [
   },
   { 
     id: 'shipping-mailers', 
-    label: 'Mailers & Shipping', 
-    title: 'Mailers & Shipping Boxes', 
-    subtitle: 'Roll-end corrugated mailer boxes, master shipping cartons, and retail display packaging.' 
+    label: 'E-Commerce Mailers', 
+    title: 'Custom E-Commerce Mailer Boxes', 
+    subtitle: 'Roll-end corrugated mailer boxes, subscription gift boxes, and self-locking retail packaging.' 
   },
   { 
     id: 'mylar-bags', 
@@ -351,7 +351,7 @@ function ProductCard({
       onClick={onSelect}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative rounded-2xl overflow-hidden bg-white border border-stone-200/80 cursor-pointer shadow-xs hover:shadow-xl transition-all duration-200 flex flex-col justify-between active:scale-[0.98] will-change-transform"
+      className="group relative rounded-2xl overflow-hidden bg-white border border-stone-200/80 cursor-pointer shadow-xs hover:shadow-xl transition-all duration-200 flex flex-col justify-between active:scale-[0.98] will-change-transform content-visibility-auto"
     >
       {/* Image Container with Smooth Dual-Angle Reveal */}
       <div className="relative w-full aspect-square overflow-hidden bg-stone-100">
@@ -371,7 +371,7 @@ function ProductCard({
               ? 'opacity-0 scale-105'
               : 'opacity-100 group-hover:scale-105'
           }`}
-          loading={index < 8 ? 'eager' : 'lazy'}
+          loading={index < 4 ? 'eager' : 'lazy'}
           decoding="async"
         />
 

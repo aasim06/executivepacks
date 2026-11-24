@@ -4,8 +4,12 @@ import dynamic from "next/dynamic";
 import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import AIAgentConsultant from "@/components/AIAgentConsultant";
 import MobileBottomNav from "@/components/MobileBottomNav";
+
+// Code-split heavy Voice & Chat AI packaging consultant for instant initial page render
+const AIAgentConsultant = dynamic(() => import("@/components/AIAgentConsultant"), {
+  ssr: false,
+});
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],

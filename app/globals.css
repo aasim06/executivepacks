@@ -10,7 +10,6 @@
 }
 
 html {
-  scroll-behavior: smooth;
   font-family: var(--font-main);
   background-color: var(--background);
   color: var(--foreground);
@@ -44,4 +43,10 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* GPU & Layout Optimization for Off-Screen Sections & Cards */
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 360px;
 }

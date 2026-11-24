@@ -1,16 +1,19 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, startTransition } from 'react';
 import * as THREE from 'three';
 import { 
   ArrowDown, 
   Rotate3d, 
   ArrowRight,
+  ArrowUpRight,
   Package,
   Zap,
   Gift,
   Play,
-  MousePointerClick
+  MousePointerClick,
+  Sparkles,
+  Bookmark
 } from 'lucide-react';
 
 type MaterialTheme = 'kraft' | 'luxury' | 'white';
@@ -26,28 +29,122 @@ const STAGES: StageMeta[] = [
   {
     step: '01',
     num: 1,
-    label: 'Die-Cut Blueprint',
-    badgeText: 'STAGE 01 • DIE-CUT BLUEPRINT',
+    label: 'Closed 3D Box',
+    badgeText: 'STAGE 01 • SEALED MASTER BOX',
   },
   {
     step: '02',
     num: 2,
-    label: 'Structural 3D Fold',
-    badgeText: 'STAGE 02 • STRUCTURAL 3D FOLD',
+    label: 'Unboxing & Reveal',
+    badgeText: 'STAGE 02 • 3D BOX OPENS',
   },
   {
     step: '03',
     num: 3,
-    label: 'The Magic Reveal',
-    badgeText: 'STAGE 03 • THE MAGIC REVEAL',
+    label: '4 Boxes in Flight',
+    badgeText: 'STAGE 03 • 4 BOXES IN FLIGHT',
   },
   {
     step: '04',
     num: 4,
-    label: '360° Inspection',
-    badgeText: 'STAGE 04 • FINAL INSPECTION',
+    label: '4 Cards Landed',
+    badgeText: 'STAGE 04 • LANDED ON 4 CARDS',
   }
 ];
+
+export interface UnboxProduct {
+  id: string;
+  name: string;
+  desc: string;
+  specPill: string;
+  priceEstimate: string;
+  moq: string;
+  ctaText: string;
+  img: string;
+  categoryTag: string;
+  tags: string[];
+}
+
+// Web Audio Soft Tactile Haptic Click
+function playSoftClick(freq = 640, duration = 0.04) {
+  if (typeof window === 'undefined') return;
+  try {
+    const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(140, ctx.currentTime + duration);
+    gain.gain.setValueAtTime(0.035, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + duration);
+  } catch {
+    // Ignore audio policy restrictions
+  }
+}
+
+// Exactly 4 products matching the video & uploaded images
+const PRODUCTS: UnboxProduct[] = [
+  {
+    id: 'sleeve-box',
+    name: 'Sleeve Box',
+    desc: 'Slide-to-reveal drawer box built with rigid greyboard. Features custom satin ribbon pull handle and precision protective foam interior for luxury retail.',
+    specPill: 'Slider Tray • Ribbon Pull',
+    priceEstimate: 'From PKR 55',
+    moq: 'MOQ 50 pcs',
+    ctaText: 'Shop Sleeve Boxes',
+    img: '/images/unboxing/box-sleeve.png',
+    categoryTag: 'rigid-luxury',
+    tags: ['# SLEEVE', '# LUXURY']
+  },
+  {
+    id: 'rigid-box',
+    name: 'Rigid Box',
+    desc: 'Prestige 1200 GSM heavy-duty greyboard cube box structure. Embellished with hot-stamped gold foil accents and ultra-smooth soft-touch matte lamination.',
+    specPill: '1200 GSM • Gold Foil Ring',
+    priceEstimate: 'From PKR 120',
+    moq: 'MOQ 25 pcs',
+    ctaText: 'Shop Rigid Boxes',
+    img: '/images/unboxing/box-rigid.png',
+    categoryTag: 'rigid-luxury',
+    tags: ['# RIGID', '# LUXURY']
+  },
+  {
+    id: 'magnetic-box',
+    name: 'Magnetic Box',
+    desc: 'Luxury book-style flip lid box with concealed magnetic snaps. Features deep botanical debossing with anti-scratch velvet coating for perfumes and jewelry.',
+    specPill: 'Concealed Magnets • Matte',
+    priceEstimate: 'From PKR 95',
+    moq: 'MOQ 50 pcs',
+    ctaText: 'Shop Magnetic Boxes',
+    img: '/images/unboxing/box-magnetic.png',
+    categoryTag: 'rigid-luxury',
+    tags: ['# BOX', '# LUXURY']
+  },
+  {
+    id: 'gable-box',
+    name: 'Gift Gable Box',
+    desc: 'Eco-friendly FSC-certified kraft carrier with die-cut handles. Finished with hand-tied satin ribbon bow and grease-resistant food-safe inner coating.',
+    specPill: 'FSC Kraft • Satin Bow',
+    priceEstimate: 'From PKR 48',
+    moq: 'MOQ 100 pcs',
+    ctaText: 'Shop Gable Boxes',
+    img: '/images/unboxing/box-gable.png',
+    categoryTag: 'food-bakery',
+    tags: ['# FOOD', '# BAKERY']
+  }
+];
+
+// Easing math
+const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const inOut = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const out = (t: number) => 1 - Math.pow(1 - t, 3);
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -58,26 +155,42 @@ export default function Hero() {
   const [activeTheme, setActiveTheme] = useState<MaterialTheme>('kraft');
   const [autoRotate, setAutoRotate] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const [hoveredCardIdx, setHoveredCardIdx] = useState<number | null>(null);
+  const hoveredCardIdxRef = useRef<number | null>(null);
 
-  // HUD & Performance Refs (Zero Re-render on RAF)
+  // HUD & DOM Refs (Zero Re-render at 60-120fps)
   const percentSpanRef = useRef<HTMLSpanElement>(null);
   const arrowIconRef = useRef<SVGSVGElement>(null);
+  const heroCopyRef = useRef<HTMLDivElement>(null);
+  const landedHeaderRef = useRef<HTMLDivElement>(null);
+  const scrollHintRef = useRef<HTMLDivElement>(null);
   const currentStageIndexRef = useRef(0);
   const lastPctRef = useRef(-1);
   const isArrowRotatedRef = useRef(false);
 
-  // Animation Refs
+  // 4 Boxes and 4 Cards Refs
+  const boxElsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const cardElsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const hoverValuesRef = useRef<number[]>([0, 0, 0, 0]);
+
+  // Smooth Scroll Progress Refs
   const targetProgressRef = useRef(0);
   const currentProgressRef = useRef(0);
   const animFrameIdRef = useRef<number | null>(null);
+  const isHeroVisibleRef = useRef(true);
+  const isLoopRunningRef = useRef(false);
 
+  // Three.js Core Refs
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const rootBoxGroupRef = useRef<THREE.Group | null>(null);
   const floatingGroupRef = useRef<THREE.Group | null>(null);
+  const ringMeshRef = useRef<THREE.Mesh | null>(null);
+  const shadowMeshRef = useRef<THREE.Mesh | null>(null);
 
-  // Panel Pivots
+  // 3D Box Pivots
   const leftPivotRef = useRef<THREE.Group | null>(null);
   const rightPivotRef = useRef<THREE.Group | null>(null);
   const frontPivotRef = useRef<THREE.Group | null>(null);
@@ -87,37 +200,47 @@ export default function Hero() {
   const leftDustRef = useRef<THREE.Group | null>(null);
   const rightDustRef = useRef<THREE.Group | null>(null);
 
-  // Rising 3D Emblem & Glow Light
-  const plaqueMeshRef = useRef<THREE.Mesh | null>(null);
+  // Interior Light & Particles
   const interiorLightRef = useRef<THREE.PointLight | null>(null);
   const particlesPointsRef = useRef<THREE.Points | null>(null);
   const particleSpeedsRef = useRef<Float32Array | null>(null);
+  const foilLightRef = useRef<THREE.PointLight | null>(null);
 
-  // Materials & Lights
+  // Materials Ref
   const materialsRef = useRef<{
     kraft: THREE.Material;
     luxury: THREE.Material;
     white: THREE.Material;
     edge: THREE.Material;
-    plaqueKraft: THREE.Material;
-    plaqueLux: THREE.Material;
-    plaqueWhite: THREE.Material;
   } | null>(null);
-  const foilLightRef = useRef<THREE.PointLight | null>(null);
 
-  // Pointer drag
+  // Interaction
   const isPointerDownRef = useRef(false);
   const previousPointerPosRef = useRef({ x: 0, y: 0 });
   const manualRotRef = useRef({ x: 0, y: 0 });
+  const mouseScreenRef = useRef({ x: 0, y: 0 });
 
-  // Responsive check
+  // Responsive Viewport Check
   useEffect(() => {
     const handleViewportCheck = () => {
       setIsDesktop(window.innerWidth >= 1024);
+      setIsMobile(window.innerWidth < 768);
     };
     handleViewportCheck();
     window.addEventListener('resize', handleViewportCheck);
     return () => window.removeEventListener('resize', handleViewportCheck);
+  }, []);
+
+  // Mouse Tracking
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseScreenRef.current = {
+        x: (e.clientX / window.innerWidth - 0.5) * 2,
+        y: (e.clientY / window.innerHeight - 0.5) * 2
+      };
+    };
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
   // -------------------------------------------------------------
@@ -153,11 +276,11 @@ export default function Hero() {
     ctxK.strokeRect(30, 30, 964, 964);
     ctxK.setLineDash([]);
 
-    ctxK.font = 'bold 15px monospace';
-    ctxK.fillStyle = 'rgba(60, 40, 18, 0.8)';
-    ctxK.fillText('EXECUTIVE PACKS • DIE-CUT REF: EP-M240', 60, 75);
-    ctxK.fillText('CORRUGATED E-FLUTE • 100% RECYCLED FSC®', 60, 100);
-    ctxK.fillText('DIMENSIONS: 240 × 160 × 80 mm', 60, 125);
+    ctxK.font = 'bold 16px monospace';
+    ctxK.fillStyle = 'rgba(60, 40, 18, 0.85)';
+    ctxK.fillText('EXECUTIVE PACKS • MASTER DIE-CUT REF: EP-M240', 60, 75);
+    ctxK.fillText('CORRUGATED E-FLUTE • 100% RECYCLED FSC® CERTIFIED', 60, 100);
+    ctxK.fillText('DIMENSIONS: 280 × 190 × 95 mm • FACTORY DIRECT', 60, 125);
 
     ctxK.save();
     ctxK.translate(512, 512);
@@ -183,7 +306,7 @@ export default function Hero() {
     const kraftTex = new THREE.CanvasTexture(kraftCanvas);
     kraftTex.anisotropy = 8;
 
-    // B. Luxury Obsidian & Gold Foil Box Texture
+    // B. Luxury Obsidian & Gold Foil
     const luxCanvas = document.createElement('canvas');
     luxCanvas.width = 1024;
     luxCanvas.height = 1024;
@@ -229,7 +352,7 @@ export default function Hero() {
     const luxTex = new THREE.CanvasTexture(luxCanvas);
     luxTex.anisotropy = 8;
 
-    // C. Clean Arctic White Texture
+    // C. Arctic White
     const whiteCanvas = document.createElement('canvas');
     whiteCanvas.width = 1024;
     whiteCanvas.height = 1024;
@@ -270,107 +393,11 @@ export default function Hero() {
     const whiteTex = new THREE.CanvasTexture(whiteCanvas);
     whiteTex.anisotropy = 8;
 
-    // D. Rising 3D Metallic Plaque Texture ("EXECUTIVE PACKS")
-    const createPlaqueCanvas = (bgFill: string, isDark: boolean) => {
-      const pCanv = document.createElement('canvas');
-      pCanv.width = 1024;
-      pCanv.height = 512;
-      const ctx = pCanv.getContext('2d')!;
-
-      ctx.fillStyle = bgFill;
-      ctx.fillRect(0, 0, 1024, 512);
-
-      ctx.save();
-      ctx.translate(512, 256);
-
-      // Outer gold rim
-      ctx.strokeStyle = '#FFB51B';
-      ctx.lineWidth = 6;
-      ctx.strokeRect(-480, -220, 960, 440);
-
-      // Inner thin gold frame
-      ctx.strokeStyle = '#fef08a';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(-468, -208, 936, 416);
-
-      // Corner gold diamonds
-      const drawDiamond = (x: number, y: number) => {
-        ctx.fillStyle = '#FFB51B';
-        ctx.beginPath();
-        ctx.moveTo(x, y - 10);
-        ctx.lineTo(x + 10, y);
-        ctx.lineTo(x, y + 10);
-        ctx.lineTo(x - 10, y);
-        ctx.closePath();
-        ctx.fill();
-      };
-      drawDiamond(-468, -208);
-      drawDiamond(468, -208);
-      drawDiamond(-468, 208);
-      drawDiamond(468, 208);
-
-      // Crown icon
-      ctx.font = '46px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('👑', 0, -115);
-
-      // Gold Foil Typography
-      const textGrad = ctx.createLinearGradient(-350, 0, 350, 0);
-      textGrad.addColorStop(0, '#d97706');
-      textGrad.addColorStop(0.3, '#FFB51B');
-      textGrad.addColorStop(0.6, '#ffffff');
-      textGrad.addColorStop(0.85, '#fef08a');
-      textGrad.addColorStop(1, '#b45309');
-
-      ctx.fillStyle = textGrad;
-      ctx.font = '900 68px serif';
-      ctx.letterSpacing = '8px';
-      ctx.shadowColor = 'rgba(255, 181, 27, 0.65)';
-      ctx.shadowBlur = 20;
-      ctx.fillText('EXECUTIVE', 0, -25);
-      ctx.shadowBlur = 0;
-
-      ctx.font = '900 48px sans-serif';
-      ctx.letterSpacing = '14px';
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText('PACKS', 0, 45);
-
-      ctx.fillStyle = '#FFB51B';
-      ctx.fillRect(-280, 80, 560, 2);
-
-      ctx.font = 'bold 16px monospace';
-      ctx.letterSpacing = '5px';
-      ctx.fillStyle = isDark ? '#fef08a' : '#451a03';
-      ctx.fillText('BESPOKE PACKAGING CO. • EST. 1984', 0, 115);
-
-      ctx.font = 'italic 500 13px serif';
-      ctx.letterSpacing = '2px';
-      ctx.fillStyle = isDark ? '#d4d4d8' : '#78350f';
-      ctx.fillText('ENGINEERED FOR THE WORLD’S FINEST BRANDS', 0, 150);
-
-      ctx.restore();
-
-      const tex = new THREE.CanvasTexture(pCanv);
-      tex.anisotropy = 8;
-      return tex;
-    };
-
-    const plaqueKraftTex = createPlaqueCanvas('#121217', true);
-    const plaqueLuxTex = createPlaqueCanvas('#0a0a0d', true);
-    const plaqueWhiteTex = createPlaqueCanvas('#ffffff', false);
-
-    return { 
-      kraftTex, 
-      luxTex, 
-      whiteTex,
-      plaqueKraftTex,
-      plaqueLuxTex,
-      plaqueWhiteTex
-    };
+    return { kraftTex, luxTex, whiteTex };
   }, []);
 
   // -------------------------------------------------------------
-  // 2. Setup Three.js Cinematic Scene
+  // 2. Three.js Setup (3D Box is 100% CLOSED at 0% Scroll)
   // -------------------------------------------------------------
   useEffect(() => {
     const mount = canvasMountRef.current;
@@ -383,14 +410,16 @@ export default function Hero() {
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
-    const camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 100);
-    camera.position.set(0, 2.7, 6.2);
-    camera.lookAt(0, 0.08, 0);
+    const camera = new THREE.PerspectiveCamera(34, width / height, 0.1, 100);
+    camera.position.set(0, 2.3, 6.2);
+    camera.lookAt(0, -0.05, 0);
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    const isMobInit = window.innerWidth < 768;
+    const maxDpr = isMobInit ? 1.5 : 2;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -399,42 +428,46 @@ export default function Hero() {
     mount.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Studio Lighting
-    const ambientLight = new THREE.AmbientLight(0xffeedd, 0.78);
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffeedd, 0.85);
     scene.add(ambientLight);
 
-    const dirKeyLight = new THREE.DirectionalLight(0xfff9f0, 1.85);
-    dirKeyLight.position.set(4.5, 7, 5);
+    const dirKeyLight = new THREE.DirectionalLight(0xfff9f0, 2.0);
+    dirKeyLight.position.set(4.5, 7.5, 5);
     dirKeyLight.castShadow = true;
     dirKeyLight.shadow.mapSize.width = 1024;
     dirKeyLight.shadow.mapSize.height = 1024;
     dirKeyLight.shadow.bias = -0.0005;
     scene.add(dirKeyLight);
 
-    const rimLight = new THREE.DirectionalLight(0x7ea0d0, 0.65);
+    const rimLight = new THREE.DirectionalLight(0x7ea0d0, 0.7);
     rimLight.position.set(-5, 4, -4);
     scene.add(rimLight);
 
-    const amberRimLight = new THREE.DirectionalLight(0xFFB51B, 0.95);
+    const amberRimLight = new THREE.DirectionalLight(0xFFB51B, 1.15);
     amberRimLight.position.set(-4, -2, -3);
     scene.add(amberRimLight);
 
-    const foilLight = new THREE.PointLight(0xFFB51B, 2.2, 7);
+    const foilLight = new THREE.PointLight(0xFFB51B, 2.4, 8);
     foilLight.position.set(1.5, 2.5, 2);
     scene.add(foilLight);
     foilLightRef.current = foilLight;
 
     // Contact Shadow Floor
+    const isMobile = window.innerWidth < 768;
+    const initBaseY = desktopMode ? -0.45 : (isMobile ? -0.48 : -0.55);
+
     const shadowGeo = new THREE.PlaneGeometry(16, 16);
     const shadowMat = new THREE.ShadowMaterial({ opacity: 0.42 });
     const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
     shadowMesh.rotation.x = -Math.PI / 2;
-    shadowMesh.position.set(desktopMode ? 1.22 : 0, desktopMode ? -0.325 : -1.255, 0);
+    shadowMesh.position.set(desktopMode ? 1.15 : 0, initBaseY, 0);
     shadowMesh.receiveShadow = true;
     scene.add(shadowMesh);
+    shadowMeshRef.current = shadowMesh;
 
-    // Glowing Golden Studio Pedestal Ring (#FFB51B)
-    const ringGeo = new THREE.RingGeometry(1.95, 2.00, 80);
+    // Glowing Golden Pedestal Ring
+    const ringGeo = new THREE.RingGeometry(1.95, 2.02, 80);
     const ringMat = new THREE.MeshBasicMaterial({ 
       color: 0xFFB51B, 
       transparent: true, 
@@ -443,108 +476,84 @@ export default function Hero() {
     });
     const ringMesh = new THREE.Mesh(ringGeo, ringMat);
     ringMesh.rotation.x = -Math.PI / 2;
-    ringMesh.position.set(desktopMode ? 1.22 : 0, desktopMode ? -0.318 : -1.248, 0);
+    ringMesh.position.set(desktopMode ? 1.15 : 0, initBaseY + 0.005, 0);
     scene.add(ringMesh);
+    ringMeshRef.current = ringMesh;
 
-    // Textures & Materials
-    const { 
-      kraftTex, 
-      luxTex, 
-      whiteTex,
-      plaqueKraftTex,
-      plaqueLuxTex,
-      plaqueWhiteTex
-    } = createProceduralTextures();
+    // Materials
+    const { kraftTex, luxTex, whiteTex } = createProceduralTextures();
 
     const kraftMat = new THREE.MeshStandardMaterial({
       map: kraftTex,
       roughness: 0.78,
-      metalness: 0.05,
+      metalness: 0.08,
+      bumpMap: kraftTex,
+      bumpScale: 0.015,
       side: THREE.DoubleSide
     });
 
-    const luxuryMat = new THREE.MeshStandardMaterial({
+    const luxMat = new THREE.MeshStandardMaterial({
       map: luxTex,
-      roughness: 0.32,
-      metalness: 0.32,
+      roughness: 0.28,
+      metalness: 0.45,
+      bumpMap: luxTex,
+      bumpScale: 0.02,
       side: THREE.DoubleSide
     });
 
     const whiteMat = new THREE.MeshStandardMaterial({
       map: whiteTex,
-      roughness: 0.38,
+      roughness: 0.5,
       metalness: 0.1,
+      bumpMap: whiteTex,
+      bumpScale: 0.01,
       side: THREE.DoubleSide
     });
 
-    const plaqueKraftMat = new THREE.MeshStandardMaterial({
-      map: plaqueKraftTex,
-      roughness: 0.22,
-      metalness: 0.82,
-      side: THREE.DoubleSide
-    });
-
-    const plaqueLuxMat = new THREE.MeshStandardMaterial({
-      map: plaqueLuxTex,
-      roughness: 0.2,
-      metalness: 0.88,
-      side: THREE.DoubleSide
-    });
-
-    const plaqueWhiteMat = new THREE.MeshStandardMaterial({
-      map: plaqueWhiteTex,
-      roughness: 0.25,
-      metalness: 0.75,
-      side: THREE.DoubleSide
+    const edgeMat = new THREE.MeshStandardMaterial({
+      color: 0x93683a,
+      roughness: 0.95,
+      metalness: 0.02
     });
 
     materialsRef.current = {
       kraft: kraftMat,
-      luxury: luxuryMat,
+      luxury: luxMat,
       white: whiteMat,
-      edge: new THREE.MeshStandardMaterial({ color: 0x937856, roughness: 0.95 }),
-      plaqueKraft: plaqueKraftMat,
-      plaqueLux: plaqueLuxMat,
-      plaqueWhite: plaqueWhiteMat
+      edge: edgeMat
     };
 
-    // Box Assembly
-    const bW = 2.4;
-    const bD = 1.6;
-    const wH = 0.95;
-    const th = 0.018;
-
+    // -------------------------------------------------------------
+    // 3. Assemble 3D Box Geometry (100% CLOSED INITIALLY)
+    // -------------------------------------------------------------
     const rootGroup = new THREE.Group();
     const floatGroup = new THREE.Group();
     rootGroup.add(floatGroup);
     scene.add(rootGroup);
-
     rootBoxGroupRef.current = rootGroup;
     floatingGroupRef.current = floatGroup;
 
-    // Position on Right side (58-60% width area on Desktop)
-    if (desktopMode) {
-      rootGroup.position.set(1.22, -0.32, 0);
-      rootGroup.scale.set(0.78, 0.78, 0.78);
-    } else {
-      rootGroup.position.set(0, -1.25, 0);
-      rootGroup.scale.set(0.32, 0.32, 0.32);
-    }
+    const bW = 2.40;
+    const bD = 1.60;
+    const wH = 0.90;
+    const th = 0.038;
 
-    const createPanel = (pw: number, pd: number, mat: THREE.Material) => {
-      const geo = new THREE.BoxGeometry(pw, th, pd);
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      return mesh;
+    const createPanel = (pW: number, pD: number, mat: THREE.Material) => {
+      const panelGroup = new THREE.Group();
+      const faceGeo = new THREE.BoxGeometry(pW, th, pD);
+      const faceMesh = new THREE.Mesh(faceGeo, mat);
+      faceMesh.castShadow = true;
+      faceMesh.receiveShadow = true;
+      panelGroup.add(faceMesh);
+      return panelGroup;
     };
 
-    // 1. Base Panel
+    // Base
     const baseMesh = createPanel(bW, bD, kraftMat);
-    baseMesh.position.set(0, th / 2, 0);
+    baseMesh.position.set(0, 0, 0);
     floatGroup.add(baseMesh);
 
-    // 2. Left Wall
+    // Left Wall
     const leftPivot = new THREE.Group();
     leftPivot.position.set(-bW / 2, th / 2, 0);
     const leftMesh = createPanel(wH, bD, kraftMat);
@@ -553,7 +562,7 @@ export default function Hero() {
     floatGroup.add(leftPivot);
     leftPivotRef.current = leftPivot;
 
-    // 3. Right Wall
+    // Right Wall
     const rightPivot = new THREE.Group();
     rightPivot.position.set(bW / 2, th / 2, 0);
     const rightMesh = createPanel(wH, bD, kraftMat);
@@ -562,7 +571,7 @@ export default function Hero() {
     floatGroup.add(rightPivot);
     rightPivotRef.current = rightPivot;
 
-    // 4. Front Wall
+    // Front Wall
     const frontPivot = new THREE.Group();
     frontPivot.position.set(0, th / 2, bD / 2);
     const frontMesh = createPanel(bW, wH, kraftMat);
@@ -571,7 +580,7 @@ export default function Hero() {
     floatGroup.add(frontPivot);
     frontPivotRef.current = frontPivot;
 
-    // 5. Back Wall
+    // Back Wall
     const backPivot = new THREE.Group();
     backPivot.position.set(0, th / 2, -bD / 2);
     const backMesh = createPanel(bW, wH, kraftMat);
@@ -580,7 +589,7 @@ export default function Hero() {
     floatGroup.add(backPivot);
     backPivotRef.current = backPivot;
 
-    // 6. Top Lid
+    // Top Lid (Attached to top edge of back wall)
     const lidPivot = new THREE.Group();
     lidPivot.position.set(0, 0, -wH);
     const lidMesh = createPanel(bW, bD, kraftMat);
@@ -589,7 +598,7 @@ export default function Hero() {
     backPivot.add(lidPivot);
     lidPivotRef.current = lidPivot;
 
-    // 7. Front Tuck Flap
+    // Front Tuck Flap (Attached to front edge of top lid)
     const tuckPivot = new THREE.Group();
     tuckPivot.position.set(0, 0, -bD);
     const tuckMesh = createPanel(bW * 0.96, wH * 0.45, kraftMat);
@@ -598,7 +607,7 @@ export default function Hero() {
     lidPivot.add(tuckPivot);
     tuckPivotRef.current = tuckPivot;
 
-    // 8. Dust Flaps (Tuck inside the box)
+    // Dust Flaps
     const leftDust = new THREE.Group();
     leftDust.position.set(-bW / 2 + 0.025, 0, -bD / 2);
     const leftDustMesh = createPanel(wH * 0.72, bD * 0.84, kraftMat);
@@ -615,30 +624,22 @@ export default function Hero() {
     lidPivot.add(rightDust);
     rightDustRef.current = rightDust;
 
-    // 9. Rising 3D Gold Plaque & Volumetric Interior Glow
-    const interiorLight = new THREE.PointLight(0xFFB51B, 0, 4.5);
-    interiorLight.position.set(0, 0.5, 0);
+    // Interior Volumetric Light
+    const interiorLight = new THREE.PointLight(0xFFB51B, 0, 5.0);
+    interiorLight.position.set(0, 0.45, 0);
     floatGroup.add(interiorLight);
     interiorLightRef.current = interiorLight;
 
-    const plaqueGeo = new THREE.BoxGeometry(1.68, 0.84, 0.038);
-    const plaqueMesh = new THREE.Mesh(plaqueGeo, plaqueKraftMat);
-    plaqueMesh.position.set(0, 0.05, 0);
-    plaqueMesh.scale.set(0.001, 0.001, 0.001);
-    plaqueMesh.castShadow = true;
-    floatGroup.add(plaqueMesh);
-    plaqueMeshRef.current = plaqueMesh;
-
-    // Golden Sparkle Particle Embers System
-    const particleCount = 75;
+    // Golden Sparkle Particle Embers
+    const particleCount = 85;
     const particlePositions = new Float32Array(particleCount * 3);
     const particleSpeeds = new Float32Array(particleCount);
 
     for (let i = 0; i < particleCount; i++) {
-      particlePositions[i * 3] = (Math.random() - 0.5) * 1.6;
-      particlePositions[i * 3 + 1] = 0.2 + Math.random() * 1.8;
-      particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 1.2;
-      particleSpeeds[i] = 0.006 + Math.random() * 0.012;
+      particlePositions[i * 3] = (Math.random() - 0.5) * 2.0;
+      particlePositions[i * 3 + 1] = 0.2 + Math.random() * 2.2;
+      particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 1.5;
+      particleSpeeds[i] = 0.008 + Math.random() * 0.015;
     }
 
     const particleGeo = new THREE.BufferGeometry();
@@ -650,14 +651,14 @@ export default function Hero() {
     const dotCtx = dotCanvas.getContext('2d')!;
     const radGrad = dotCtx.createRadialGradient(32, 32, 2, 32, 32, 30);
     radGrad.addColorStop(0, '#ffffff');
-    radGrad.addColorStop(0.3, '#FFB51B');
+    radGrad.addColorStop(0.35, '#FFB51B');
     radGrad.addColorStop(1, 'rgba(255, 181, 27, 0)');
     dotCtx.fillStyle = radGrad;
     dotCtx.fillRect(0, 0, 64, 64);
     const dotTex = new THREE.CanvasTexture(dotCanvas);
 
     const particleMat = new THREE.PointsMaterial({
-      size: 0.14,
+      size: 0.16,
       map: dotTex,
       transparent: true,
       opacity: 0,
@@ -670,11 +671,35 @@ export default function Hero() {
     particlesPointsRef.current = particlesPoints;
     particleSpeedsRef.current = particleSpeeds;
 
-    // Initial Isometric Orientation
-    rootGroup.rotation.x = 0.52;
+    // Initial 3D Box Position
+    if (desktopMode) {
+      rootGroup.position.set(1.15, -0.45, 0);
+      rootGroup.scale.set(0.75, 0.75, 0.75);
+    } else {
+      rootGroup.position.set(0, -1.25, 0);
+      rootGroup.scale.set(0.32, 0.32, 0.32);
+    }
+    rootGroup.rotation.x = 0.48;
     rootGroup.rotation.y = -0.38;
 
-    // Resize
+    // ─────────────────────────────────────────────────────────────
+    // EXACT KINEMATICS: BOX IS COMPLETELY CLOSED AT INITIAL STATE
+    // ─────────────────────────────────────────────────────────────
+    leftPivot.rotation.z = -Math.PI / 2;
+    rightPivot.rotation.z = Math.PI / 2;
+    frontPivot.rotation.x = -Math.PI / 2;
+    backPivot.rotation.x = Math.PI / 2;
+
+    // +Math.PI / 2 folds the lid horizontally forward over the box top!
+    lidPivot.rotation.x = Math.PI / 2; 
+
+    // +Math.PI / 2 folds the tuck flap vertically down into the front of the box!
+    tuckPivot.rotation.x = Math.PI / 2;
+
+    // Dust flaps tucked inward inside the box
+    leftDust.rotation.z = -Math.PI / 2;
+    rightDust.rotation.z = Math.PI / 2;
+
     const handleResize = () => {
       if (!mount || !renderer || !camera) return;
       const nw = mount.clientWidth;
@@ -684,42 +709,64 @@ export default function Hero() {
       renderer.setSize(nw, nh);
 
       const isDesk = window.innerWidth >= 1024;
+      const isMob = window.innerWidth < 768;
+      const maxDpr = isMob ? 1.5 : 2;
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
+      setIsDesktop(isDesk);
+      setIsMobile(isMob);
       if (rootBoxGroupRef.current) {
         if (isDesk) {
-          rootBoxGroupRef.current.position.set(1.22, -0.32, 0);
-          rootBoxGroupRef.current.scale.set(0.78, 0.78, 0.78);
-          ringMesh.position.set(1.22, -0.318, 0);
-          shadowMesh.position.set(1.22, -0.325, 0);
+          rootBoxGroupRef.current.position.set(1.15, -0.45, 0);
+          rootBoxGroupRef.current.scale.set(0.75, 0.75, 0.75);
+          if (ringMeshRef.current) ringMeshRef.current.position.set(1.15, -0.445, 0);
+          if (shadowMeshRef.current) shadowMeshRef.current.position.set(1.15, -0.45, 0);
         } else {
-          rootBoxGroupRef.current.position.set(0, -1.25, 0);
-          rootBoxGroupRef.current.scale.set(0.32, 0.32, 0.32);
-          ringMesh.position.set(0, -1.248, 0);
-          shadowMesh.position.set(0, -1.255, 0);
+          const mobY = isMob ? -0.48 : -0.55;
+          const mobScale = isMob ? 0.48 : 0.60;
+          rootBoxGroupRef.current.position.set(0, mobY, 0);
+          rootBoxGroupRef.current.scale.set(mobScale, mobScale, mobScale);
+          if (ringMeshRef.current) ringMeshRef.current.position.set(0, mobY + 0.005, 0);
+          if (shadowMeshRef.current) shadowMeshRef.current.position.set(0, mobY, 0);
         }
       }
     };
     window.addEventListener('resize', handleResize);
 
-    // Continuous Animation Loop
+    // -------------------------------------------------------------
+    // 4. Main Continuous Animation Loop
+    // -------------------------------------------------------------
     let clock = new THREE.Clock();
 
     const animateLoop = () => {
+      // Pause Three.js render loop when Hero is offscreen to save GPU & CPU
+      if (!isHeroVisibleRef.current) {
+        isLoopRunningRef.current = false;
+        return;
+      }
+
       animFrameIdRef.current = requestAnimationFrame(animateLoop);
       const elapsedTime = clock.getElapsedTime();
 
-      // Smooth Lerp
+      // Soft, cushioned lerp toward target scroll fraction (glides like velvet, zero stutter)
       const diff = targetProgressRef.current - currentProgressRef.current;
-      currentProgressRef.current += diff * 0.16;
+      currentProgressRef.current += diff * 0.08;
       const p = currentProgressRef.current;
 
-      // Update stage only when threshold crossed (prevents 60fps React re-renders)
-      const stageIdx = p < 0.25 ? 0 : p < 0.55 ? 1 : p < 0.80 ? 2 : 3;
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const deskMode = W >= 1024;
+      const isMob = W < 768;
+
+      // Stage HUD with startTransition to avoid dropping frames during scroll
+      const stageIdx = p < 0.20 ? 0 : p < 0.50 ? 1 : p < 0.74 ? 2 : 3;
       if (stageIdx !== currentStageIndexRef.current) {
         currentStageIndexRef.current = stageIdx;
-        setCurrentStageIndex(stageIdx);
+        startTransition(() => {
+          setCurrentStageIndex(stageIdx);
+        });
       }
 
-      // Update HUD percentage directly via DOM ref (0 React re-renders)
+      // HUD Percentage
       if (percentSpanRef.current) {
         const pct = Math.round(p * 100);
         if (lastPctRef.current !== pct) {
@@ -729,155 +776,322 @@ export default function Hero() {
       }
 
       if (arrowIconRef.current) {
-        const shouldRotate = p > 0.85;
+        const shouldRotate = p > 0.90;
         if (shouldRotate !== isArrowRotatedRef.current) {
           isArrowRotatedRef.current = shouldRotate;
           arrowIconRef.current.style.transform = shouldRotate ? 'rotate(180deg)' : 'rotate(0deg)';
         }
       }
 
-      // Folding Kinematics
-      const pWalls = Math.max(0, Math.min(1, (p - 0.10) / 0.30));
-      const wallAngle = pWalls * (Math.PI / 2);
+      // -----------------------------------------------------------
+      // A. 3D Box Kinematics: 100% CLOSED AT START -> OPENS ON SCROLL
+      // -----------------------------------------------------------
+      const pCenter = clamp(p / 0.26);
+      const eCenter = inOut(pCenter);
+      const startX = deskMode ? 1.15 : 0;
+      const currentBoxX = lerp(startX, 0, eCenter);
 
-      if (leftPivotRef.current) leftPivotRef.current.rotation.z = -wallAngle;
-      if (rightPivotRef.current) rightPivotRef.current.rotation.z = wallAngle;
-      if (frontPivotRef.current) frontPivotRef.current.rotation.x = -wallAngle;
-      if (backPivotRef.current) backPivotRef.current.rotation.x = wallAngle;
+      const pOpen = clamp((p - 0.05) / 0.32);
+      const eOpen = inOut(pOpen);
 
-      const pDust = Math.max(0, Math.min(1, (p - 0.32) / 0.18));
-      const dustAngle = pDust * (Math.PI / 2);
-      if (leftDustRef.current) leftDustRef.current.rotation.z = -dustAngle;
-      if (rightDustRef.current) rightDustRef.current.rotation.z = dustAngle;
+      // Top Lid: at eOpen = 0 -> +PI/2 (completely closed & flat over box top)
+      // at eOpen = 1 -> opens backward to -0.65 rad (-37°)
+      if (lidPivotRef.current) {
+        lidPivotRef.current.rotation.x = Math.PI / 2 - eOpen * (Math.PI * 0.70);
+      }
 
-      const pLidShowcase = Math.max(0, Math.min(1, (p - 0.35) / 0.22));
-      const lidAngle = pLidShowcase * (-Math.PI * 0.35);
-      if (lidPivotRef.current) lidPivotRef.current.rotation.x = lidAngle;
-      if (tuckPivotRef.current) tuckPivotRef.current.rotation.x = -lidAngle * 0.5;
+      // Tuck Flap: at eOpen = 0 -> +PI/2 (tucked down inside front wall)
+      // at eOpen = 1 -> 0 (straight with the lid)
+      if (tuckPivotRef.current) {
+        tuckPivotRef.current.rotation.x = Math.PI / 2 - eOpen * (Math.PI / 2);
+      }
 
-      // The Magic Reveal: Rising Emblem & Sparks
-      const pReveal = Math.max(0, Math.min(1, (p - 0.38) / 0.35));
-      
-      if (plaqueMeshRef.current && interiorLightRef.current) {
-        const targetY = 0.05 + pReveal * 1.32;
-        plaqueMeshRef.current.position.y = targetY;
+      // Dust Flaps: tucked inside when closed (eOpen=0), folds out with lid (eOpen=1)
+      if (leftDustRef.current) {
+        leftDustRef.current.rotation.z = -Math.PI / 2 + eOpen * (Math.PI / 2);
+      }
+      if (rightDustRef.current) {
+        rightDustRef.current.rotation.z = Math.PI / 2 - eOpen * (Math.PI / 2);
+      }
 
-        const scale = 0.001 + pReveal * 0.999;
-        plaqueMeshRef.current.scale.set(scale, scale, scale);
-
-        plaqueMeshRef.current.rotation.x = Math.sin(elapsedTime * 2.2) * 0.06 - 0.05;
-        plaqueMeshRef.current.rotation.y = Math.cos(elapsedTime * 1.8) * 0.05;
-
-        interiorLightRef.current.intensity = pReveal * 3.6;
-        interiorLightRef.current.position.y = 0.2 + pReveal * 0.6;
+      // Interior Light & Particle Glow
+      if (interiorLightRef.current) {
+        interiorLightRef.current.intensity = eOpen * 5.0;
       }
 
       if (particlesPointsRef.current && particleSpeedsRef.current) {
         const mat = particlesPointsRef.current.material as THREE.PointsMaterial;
-        mat.opacity = pReveal * 0.85;
+        mat.opacity = eOpen * 0.9;
 
         const posAttr = particlesPointsRef.current.geometry.attributes.position as THREE.BufferAttribute;
         const positions = posAttr.array as Float32Array;
 
         for (let i = 0; i < particleCount; i++) {
           positions[i * 3 + 1] += particleSpeedsRef.current[i];
-          if (positions[i * 3 + 1] > 2.6) {
+          if (positions[i * 3 + 1] > 2.8) {
             positions[i * 3 + 1] = 0.2;
-            positions[i * 3] = (Math.random() - 0.5) * 1.5;
-            positions[i * 3 + 2] = (Math.random() - 0.5) * 1.2;
+            positions[i * 3] = (Math.random() - 0.5) * 1.8;
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 1.4;
           }
         }
         posAttr.needsUpdate = true;
       }
 
-      // 360° Float and Levitation
+      // Box Translation & Scaling
       if (rootBoxGroupRef.current && floatingGroupRef.current) {
-        const initialRotX = 0.52;
-        const initialRotY = -0.38;
+        const pDescend = clamp((p - 0.45) / 0.42);
+        const eDescend = inOut(pDescend);
 
-        const pSpin = Math.max(0, Math.min(1, (p - 0.74) / 0.26));
-        const spinY = pSpin * (Math.PI * 2.2);
+        const baseScale = deskMode ? 0.75 : (isMob ? 0.48 : 0.60);
+        const targetScale = baseScale * (1 - eDescend * (isMob ? 0.78 : 0.45));
+        rootBoxGroupRef.current.scale.set(targetScale, targetScale, targetScale);
 
-        const floatY = Math.sin(elapsedTime * 2.2) * 0.04 + (p > 0.74 ? 0.2 : 0);
-        floatingGroupRef.current.position.y = floatY;
+        const baseY = deskMode ? -0.45 : (isMob ? -0.48 : -0.55);
+        const descendY = baseY - eDescend * (deskMode ? 0.75 : (isMob ? 0.62 : 0.45));
+        rootBoxGroupRef.current.position.set(currentBoxX, descendY, 0);
+
+        if (ringMeshRef.current) {
+          ringMeshRef.current.position.set(currentBoxX, descendY + 0.005, 0);
+          const ringScale = 1 - eDescend * (isMob ? 0.78 : 0.40);
+          ringMeshRef.current.scale.set(ringScale, ringScale, ringScale);
+        }
+        if (shadowMeshRef.current) {
+          shadowMeshRef.current.position.set(currentBoxX, descendY, 0);
+          const shadowScale = 1 - eDescend * (isMob ? 0.78 : 0.40);
+          shadowMeshRef.current.scale.set(shadowScale, shadowScale, shadowScale);
+        }
+
+        const idleFloat = Math.sin(elapsedTime * 2.2) * 0.035;
+        floatingGroupRef.current.position.y = idleFloat;
 
         const autoSpinAngle = autoRotate ? elapsedTime * 0.5 : 0;
-        rootBoxGroupRef.current.rotation.x = initialRotX * (1 - pSpin * 0.38) + manualRotRef.current.x;
-        rootBoxGroupRef.current.rotation.y = initialRotY + spinY + autoSpinAngle + manualRotRef.current.y;
+        const initialRotX = 0.48;
+        const initialRotY = -0.38;
+        rootBoxGroupRef.current.rotation.x = initialRotX + manualRotRef.current.x;
+        rootBoxGroupRef.current.rotation.y = initialRotY + autoSpinAngle + manualRotRef.current.y;
 
         if (foilLightRef.current) {
-          foilLightRef.current.position.x = Math.sin(elapsedTime * 1.5) * 3 + (desktopMode ? 1.22 : 0);
-          foilLightRef.current.position.y = 1.8 + Math.cos(elapsedTime * 1.5) * 0.5;
-          foilLightRef.current.position.z = Math.cos(elapsedTime * 1.5) * 3 + 2;
+          foilLightRef.current.position.x = Math.sin(elapsedTime * 1.6) * 3 + currentBoxX;
+          foilLightRef.current.position.y = 2.0 + Math.cos(elapsedTime * 1.6) * 0.5;
         }
       }
+
+      // -----------------------------------------------------------
+      // B. Hero Headline & Hints Fade Out
+      // -----------------------------------------------------------
+      const pTextFade = clamp((p - 0.05) / 0.18);
+      if (heroCopyRef.current) {
+        heroCopyRef.current.style.opacity = `${1 - pTextFade}`;
+        heroCopyRef.current.style.transform = `translateY(${-pTextFade * 40}px)`;
+        heroCopyRef.current.style.pointerEvents = pTextFade > 0.8 ? 'none' : 'auto';
+      }
+      if (scrollHintRef.current) {
+        scrollHintRef.current.style.opacity = `${clamp(1 - p * 4)}`;
+      }
+
+      // Top Landed Title (Reveals at p > 0.62)
+      const pHeaderFade = clamp((p - 0.62) / 0.18);
+      if (landedHeaderRef.current) {
+        landedHeaderRef.current.style.opacity = `${pHeaderFade}`;
+        landedHeaderRef.current.style.transform = `translateY(${(1 - pHeaderFade) * -20}px)`;
+      }
+
+      // -----------------------------------------------------------
+      // C. EXACTLY 4 BOXES & 4 CARDS KINEMATICS (2x2 Grid on Mobile, 4 in Row on Desktop)
+      // -----------------------------------------------------------
+      const cw = Math.min(W * 0.22, 275);
+      const colW = cw * 1.10;
+      const topFinal = deskMode 
+        ? Math.max(H * 0.48, 410) 
+        : Math.max(H * 0.46, 340);
+
+      const originScreenX = currentBoxX * (W / 6.5);
+      const originScreenY = isMob ? H * 0.10 : (deskMode ? -H * 0.02 : -H * 0.08);
+
+      // Mobile 2x2 Grid Positioning Parameters (Generous height & scale with guaranteed bottom padding)
+      const mobCardHeight = 264;
+      const mobRowGap = 10;
+      const mobRow0Top = Math.max(H * 0.125, 86);
+      const mobRow1Top = mobRow0Top + mobCardHeight + mobRowGap;
+      const mobColSpacing = Math.min(W * 0.245, 94);
+
+      PRODUCTS.forEach((_, i) => {
+        const boxEl = boxElsRef.current[i];
+        const cardEl = cardElsRef.current[i];
+        if (!boxEl) return;
+
+        const tEmerge = clamp((p - 0.20 - i * 0.035) / 0.32);
+        const eEmerge = inOut(tEmerge);
+
+        const tLand = clamp((p - 0.54 - i * 0.035) / 0.32);
+        const eLand = inOut(tLand);
+
+        // 2x2 on Mobile: Row 0 (i=0,1), Row 1 (i=2,3)
+        const col = i % 2;
+        const row = Math.floor(i / 2);
+        const colSign = col === 0 ? -1 : 1;
+
+        const ex = isMob ? colSign * mobColSpacing : (i - 1.5) * colW;
+
+        const targetCardTop = isMob ? (row === 0 ? mobRow0Top : mobRow1Top) : topFinal;
+        // On mobile, flying box guides towards the card's center (114px from card top, comfortably clear of badges and larger)
+        // On desktop, box lands half-above the card
+        const ey = isMob 
+          ? (targetCardTop + 114 - H * 0.50) 
+          : (topFinal - H * 0.50 - 10);
+
+        const mobSpreadX = colSign * (W * 0.24);
+        const mobPeakY = originScreenY - H * (row === 0 ? 0.28 : 0.14);
+        const spreadX = isMob ? mobSpreadX : (i - 1.5) * (deskMode ? W * 0.20 : W * 0.22);
+        const peakY = isMob ? mobPeakY : originScreenY - H * (deskMode ? 0.24 : 0.18) + (i % 2 === 0 ? -15 : 15);
+        const arcY = -Math.sin(Math.PI * tEmerge) * (H * (deskMode ? 0.14 : 0.12));
+
+        const midX = lerp(originScreenX, spreadX, eEmerge) + mouseScreenRef.current.x * 12 * (1 - eLand);
+        const midY = lerp(originScreenY, peakY, eEmerge) + arcY + mouseScreenRef.current.y * 10 * (1 - eLand);
+
+        const currentX = lerp(midX, ex, eLand);
+        const currentY = lerp(midY, ey, eLand);
+
+        const seatedScale = deskMode ? 1.08 : (isMob ? 0.74 : 0.72);
+        const flyScale = lerp(0.08, seatedScale, eEmerge) + Math.sin(Math.PI * tEmerge) * 0.10;
+        const currentScale = lerp(flyScale, seatedScale, eLand);
+
+        const flyRotY = Math.sin(Math.PI * tEmerge) * (i % 2 === 0 ? -40 : 40);
+        const currentRotY = lerp(flyRotY, 0, eLand);
+
+        const flyRotZ = Math.sin(Math.PI * tEmerge) * (i - 1.5) * 5;
+        const currentRotZ = lerp(flyRotZ, 0, eLand);
+
+        // Keep box 100% visible throughout flight and resting in the card stage
+        const boxOpacity = clamp(tEmerge * 3.5, 0, 1);
+
+        // Interactive smooth floating hover physics (smoothly lerps up and down, no popping)
+        const isHovered = hoveredCardIdxRef.current === i && p > 0.70;
+        const targetHover = isHovered ? 1.0 : 0.0;
+        hoverValuesRef.current[i] = lerp(hoverValuesRef.current[i] || 0, targetHover, 0.09);
+        const hVal = hoverValuesRef.current[i];
+
+        const hoverLift = hVal * (deskMode ? -18 : -10);
+        const hoverScale = 1.0 + hVal * 0.08;
+        const hoverTilt = hVal * Math.sin(elapsedTime * 2.8) * 2.0;
+
+        const finalBoxY = currentY + hoverLift;
+        const finalBoxScale = currentScale * hoverScale;
+        const finalRotZ = currentRotZ + hoverTilt;
+
+        boxEl.style.opacity = `${boxOpacity}`;
+        boxEl.style.transform = `translate3d(${currentX}px, ${finalBoxY}px, 0) rotateY(${currentRotY}deg) rotateZ(${finalRotZ}deg) scale(${finalBoxScale})`;
+
+        if (cardEl) {
+          const cardOpacity = out(tLand);
+          const cardHoverLift = hVal * (deskMode ? -8 : -5);
+          const cardSlideY = targetCardTop + (1 - cardOpacity) * (deskMode ? H * 0.65 : H * 0.40) + cardHoverLift;
+          cardEl.style.opacity = `${cardOpacity}`;
+          cardEl.style.transform = `translate3d(${ex}px, ${cardSlideY}px, 0)`;
+          cardEl.style.pointerEvents = cardOpacity > 0.8 ? 'auto' : 'none';
+        }
+      });
 
       renderer.render(scene, camera);
     };
 
+    isLoopRunningRef.current = true;
     animateLoop();
+
+    // Auto-pause Three.js when scrolled out of view and resume when approaching
+    const heroObserver = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        const isVisible = entry ? entry.isIntersecting : true;
+        isHeroVisibleRef.current = isVisible;
+        if (isVisible && !isLoopRunningRef.current) {
+          isLoopRunningRef.current = true;
+          animFrameIdRef.current = requestAnimationFrame(animateLoop);
+        }
+      },
+      { rootMargin: '300px 0px 300px 0px', threshold: 0.01 }
+    );
+
+    if (containerRef.current) {
+      heroObserver.observe(containerRef.current);
+    }
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      heroObserver.disconnect();
       if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
       renderer.dispose();
     };
   }, [createProceduralTextures, autoRotate]);
 
-  // Material Switcher
+  // -------------------------------------------------------------
+  // 5. Zero-Layout-Thrashing Scroll Progress Listener (120 FPS Smooth)
+  // -------------------------------------------------------------
+  useEffect(() => {
+    let cachedOffsetTop = 0;
+    let cachedTotalScrollable = 1;
+    let cachedTopOffset = 56;
+
+    const measureLayout = () => {
+      const el = containerRef.current;
+      if (!el) return;
+      cachedTopOffset = window.innerWidth >= 640 ? 64 : 56;
+      cachedOffsetTop = el.offsetTop;
+      cachedTotalScrollable = Math.max(1, el.offsetHeight - (window.innerHeight - cachedTopOffset));
+    };
+
+    measureLayout();
+    window.addEventListener('resize', measureLayout, { passive: true });
+
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollY = window.scrollY || window.pageYOffset || 0;
+          const scrolled = scrollY - cachedOffsetTop + cachedTopOffset;
+          const p = Math.max(0, Math.min(1, scrolled / cachedTotalScrollable));
+          targetProgressRef.current = p;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('resize', measureLayout);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const scrollToStage = (stageIdx: number) => {
+    playSoftClick(560 + stageIdx * 80, 0.04);
+    const el = containerRef.current;
+    if (!el) return;
+    const progressTargets = [0.02, 0.30, 0.62, 0.94];
+    const targetP = progressTargets[stageIdx] || 0;
+    const topOffset = window.innerWidth >= 640 ? 64 : 56;
+    const totalScrollable = el.offsetHeight - (window.innerHeight - topOffset);
+    const targetScrollY = el.offsetTop - topOffset + totalScrollable * targetP;
+    
+    window.scrollTo({ top: targetScrollY, behavior: 'smooth' });
+  };
+
   const switchMaterial = (theme: MaterialTheme) => {
+    playSoftClick(720, 0.04);
     setActiveTheme(theme);
     if (!materialsRef.current || !rootBoxGroupRef.current) return;
 
     const chosenBoxMat = materialsRef.current[theme];
     rootBoxGroupRef.current.traverse((child) => {
-      if (child instanceof THREE.Mesh && child !== plaqueMeshRef.current && child.material !== materialsRef.current?.edge) {
+      if (child instanceof THREE.Mesh && child.material !== materialsRef.current?.edge) {
         child.material = chosenBoxMat;
       }
     });
-
-    if (plaqueMeshRef.current) {
-      if (theme === 'luxury') {
-        plaqueMeshRef.current.material = materialsRef.current.plaqueLux;
-      } else if (theme === 'white') {
-        plaqueMeshRef.current.material = materialsRef.current.plaqueWhite;
-      } else {
-        plaqueMeshRef.current.material = materialsRef.current.plaqueKraft;
-      }
-    }
   };
 
-  // Scroll tracking
-  useEffect(() => {
-    const handleScroll = () => {
-      const el = containerRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const topOffset = window.innerWidth >= 640 ? 64 : 56;
-      const totalScrollable = el.offsetHeight - (window.innerHeight - topOffset);
-      if (totalScrollable <= 0) return;
-
-      const p = Math.max(0, Math.min(1, (topOffset - rect.top) / totalScrollable));
-      targetProgressRef.current = p;
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const scrollToStage = (stageIdx: number) => {
-    const el = containerRef.current;
-    if (!el) return;
-    const progressTargets = [0.05, 0.35, 0.65, 0.90];
-    const targetP = progressTargets[stageIdx] || 0;
-    const topOffset = window.innerWidth >= 640 ? 64 : 56;
-    const totalScrollable = el.offsetHeight - (window.innerHeight - topOffset);
-    const targetScrollY = el.offsetTop - topOffset + totalScrollable * targetP;
-    window.scrollTo({ top: targetScrollY, behavior: 'smooth' });
-  };
-
-  // Pointer drag
   const handlePointerDown = (e: React.PointerEvent) => {
     isPointerDownRef.current = true;
     previousPointerPosRef.current = { x: e.clientX, y: e.clientY };
@@ -898,25 +1112,28 @@ export default function Hero() {
     isPointerDownRef.current = false;
   };
 
-  // Active Stage
+  const handleSelectCategory = (categoryTag: string) => {
+    window.dispatchEvent(new CustomEvent('open_category', { detail: categoryTag }));
+    const el = document.getElementById('categories-section');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const currentStage = STAGES[currentStageIndex];
 
   return (
     <section 
       ref={containerRef} 
       id="hero" 
-      className="relative h-[310vh] bg-[#101014] text-white select-none overflow-clip transition-colors duration-500"
+      className="relative h-[360vh] bg-[#101014] text-white select-none overflow-clip transition-colors duration-500"
     >
-      {/* Sticky Fullscreen Cinematic Viewport - Anchored below the sticky navbar and above mobile bottom nav */}
+      {/* Sticky Fullscreen Viewport */}
       <div 
-        className="sticky top-14 sm:top-16 left-0 w-full overflow-hidden flex flex-col justify-between h-[calc(100vh_-_7.5rem)] sm:h-[calc(100vh_-_4rem)]"
-        style={{ height: 'calc(100vh - 7.5rem)', minHeight: 'calc(100vh - 7.5rem)' }}
+        className="sticky top-14 sm:top-16 left-0 w-full overflow-hidden flex flex-col justify-between h-[calc(100dvh_-_3.5rem)] sm:h-[calc(100vh_-_4rem)]"
       >
-        
-        {/* Subtle Golden Radial Gradient Behind 3D Box & Ambient Vignette */}
+        {/* Subtle Ambient Radial Gradient */}
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_72%_45%,rgba(255,181,27,0.18)_0%,rgba(16,16,20,0)_65%),radial-gradient(circle_at_20%_25%,rgba(255,255,255,0.03)_0%,rgba(16,16,20,0)_50%)]" />
 
-        {/* Subtle Technical Grid Texture */}
+        {/* Technical Grid Texture */}
         <div 
           className="absolute inset-0 pointer-events-none opacity-[0.03]"
           style={{
@@ -926,19 +1143,21 @@ export default function Hero() {
         />
 
         {/* ------------------------------------------------------------- */}
-        {/* TOP FLOATING BRAND / STATUS BAR (Container Fluid) */}
+        {/* TOP STATUS BAR (Container Fluid Widescreen) */}
         {/* ------------------------------------------------------------- */}
-        <div className="relative z-20 pt-3 sm:pt-4 px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 w-full max-w-[1920px] mx-auto flex items-center justify-between pointer-events-none">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.06] backdrop-blur-xl border border-white/10 shadow-lg pointer-events-auto">
+        <div className="relative z-30 pt-3 sm:pt-4 px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 w-full max-w-[1920px] mx-auto flex items-center justify-between pointer-events-none">
+          <div className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/[0.06] backdrop-blur-xl border border-white/10 shadow-lg pointer-events-auto">
             <span className="w-2 h-2 rounded-full bg-[#FFB51B] animate-pulse shrink-0 shadow-[0_0_8px_#FFB51B]"></span>
-            <span className="text-[11px] font-bold text-stone-200 tracking-wider uppercase font-mono">
-              3D Realtime Kinematics Engine
+            <span className="text-[10px] sm:text-[11px] font-bold text-stone-200 tracking-wider uppercase font-mono">
+              {currentStage.badgeText}
             </span>
           </div>
 
           <div className="flex items-center gap-2 pointer-events-auto">
+            {/* Auto Orbit Toggle */}
             <button
               onClick={() => setAutoRotate(!autoRotate)}
+              aria-label="Toggle Auto Orbit"
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition backdrop-blur-xl shadow-lg ${
                 autoRotate 
                   ? 'bg-[#FFB51B] text-[#101014] border-[#FFB51B] shadow-[0_0_12px_rgba(255,181,27,0.4)]' 
@@ -949,6 +1168,7 @@ export default function Hero() {
               <span className="hidden sm:inline">{autoRotate ? 'Auto Orbiting' : 'Auto Orbit'}</span>
             </button>
 
+            {/* Scroll Percentage Meter */}
             <div className="px-3 py-1.5 rounded-xl bg-white text-[#101014] font-mono text-xs font-black shadow-lg flex items-center gap-1.5">
               <span ref={percentSpanRef}>0%</span>
               <ArrowDown ref={arrowIconRef} className="w-3.5 h-3.5 transition-transform duration-300" />
@@ -957,7 +1177,26 @@ export default function Hero() {
         </div>
 
         {/* ------------------------------------------------------------- */}
-        {/* 3D CANVAS STAGE (Full bleed background layer) */}
+        {/* TOP TITLE FOR LANDED PHASE (Reveals at p > 62%) */}
+        {/* ------------------------------------------------------------- */}
+        <div 
+          ref={landedHeaderRef}
+          className="absolute top-11 sm:top-16 left-0 right-0 z-20 text-center pointer-events-none opacity-0 px-4 will-change-transform"
+        >
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-[#FFB51B]/15 border border-[#FFB51B]/40 text-[#FFB51B] text-[9px] sm:text-xs font-bold uppercase tracking-wider mb-0.5 backdrop-blur-md">
+            <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#FFB51B]" />
+            <span>Pick the box that fits your product</span>
+          </div>
+          <h2 className="text-base sm:text-3xl md:text-4xl font-black text-white tracking-tight drop-shadow-md">
+            Printed, Packed & Delivered to Your Door
+          </h2>
+          <p className="text-xs sm:text-sm text-stone-300 font-medium max-w-xl mx-auto mt-1 hidden sm:block">
+            Hover over any box to inspect dieline details • Instant wholesale pricing from factory
+          </p>
+        </div>
+
+        {/* ------------------------------------------------------------- */}
+        {/* THREE.JS 3D BOX CANVAS (Background WebGL Stage) */}
         {/* ------------------------------------------------------------- */}
         <div 
           className="absolute inset-0 z-0 cursor-grab active:cursor-grabbing"
@@ -966,6 +1205,14 @@ export default function Hero() {
           onPointerUp={handlePointerUp}
           onPointerLeave={handlePointerUp}
         >
+          {/* Studio Radial Spotlight Halo behind 3D Master Box */}
+          <div 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] rounded-full pointer-events-none"
+            style={{
+              background: 'radial-gradient(circle, rgba(255, 181, 27, 0.08) 0%, rgba(255, 181, 27, 0.02) 50%, transparent 75%)',
+              filter: 'blur(60px)'
+            }}
+          />
           <div ref={canvasMountRef} className="w-full h-full pointer-events-none" />
           
           <div className="absolute bottom-24 right-8 pointer-events-none hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-900/80 backdrop-blur-md border border-white/10 text-white/90 text-[11px] font-medium shadow-xl">
@@ -975,104 +1222,280 @@ export default function Hero() {
         </div>
 
         {/* ------------------------------------------------------------- */}
+        {/* 4 LANDING PRODUCT CARDS (Clean White Cards Like Video) */}
+        {/* ------------------------------------------------------------- */}
+        <div 
+          className="absolute inset-0 z-20 pointer-events-none"
+        >
+          {PRODUCTS.map((prod, idx) => {
+            const isHovered = hoveredCardIdx === idx;
+            return (
+              <div
+                key={prod.id}
+                ref={(el) => { cardElsRef.current[idx] = el; }}
+                onMouseEnter={() => {
+                  setHoveredCardIdx(idx);
+                  hoveredCardIdxRef.current = idx;
+                  playSoftClick(740, 0.03);
+                }}
+                onMouseLeave={() => {
+                  setHoveredCardIdx(null);
+                  hoveredCardIdxRef.current = null;
+                }}
+                className={`absolute left-1/2 top-0 w-[170px] sm:w-[230px] md:w-[265px] -ml-[85px] sm:-ml-[115px] md:-ml-[132px] bg-white text-stone-900 rounded-[22px] sm:rounded-[24px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.12)] flex flex-col justify-between will-change-transform opacity-0 pointer-events-none transition-[border-color,box-shadow] duration-200 border ${
+                  isHovered 
+                    ? 'border-[#FFB51B] shadow-[0_20px_40px_-8px_rgba(255,181,27,0.3)] ring-2 ring-[#FFB51B]/40' 
+                    : 'border-stone-200/90'
+                } overflow-hidden`}
+                style={{
+                  height: isMobile ? '264px' : (!isDesktop ? '220px' : '296px'),
+                  paddingTop: isMobile ? '0px' : (!isDesktop ? '70px' : '110px'),
+                  paddingBottom: isMobile ? '0px' : (!isDesktop ? '14px' : '20px'),
+                  paddingLeft: isMobile ? '0px' : (!isDesktop ? '12px' : '18px'),
+                  paddingRight: isMobile ? '0px' : (!isDesktop ? '12px' : '18px')
+                }}
+              >
+                {/* MOBILE LAYOUT: Clean Luxury Card with Full-Width Button & Guaranteed Bottom Padding */}
+                <div 
+                  onClick={() => {
+                    playSoftClick(880, 0.05);
+                    handleSelectCategory(prod.categoryTag);
+                  }}
+                  className="sm:hidden flex flex-col justify-between h-full w-full select-none text-left cursor-pointer px-3 pt-3 pb-5"
+                >
+                  {/* Top Product Image Stage (Clean White, Stage for the 3D Flying Box) */}
+                  <div className="w-full h-[138px] relative flex items-center justify-center shrink-0">
+                    {/* Top-Left: ⚡ 30% OFF Dark Pill */}
+                    <div className="absolute top-0 left-0 px-2 py-0.5 rounded-full bg-[#0a1120] text-white flex items-center gap-1 text-[8.5px] font-black shadow-xs z-10 pointer-events-none">
+                      <Zap className="w-2.5 h-2.5 text-amber-400 fill-amber-400" />
+                      <span>30% OFF</span>
+                    </div>
+
+                    {/* Top-Right: Circular Bookmark Button */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        playSoftClick(880, 0.04);
+                      }}
+                      className="absolute top-0 right-0 w-6 h-6 rounded-full bg-white border border-stone-200/90 shadow-2xs flex items-center justify-center text-stone-900 z-10 active:scale-90 transition pointer-events-auto"
+                      title="Save to Collection"
+                    >
+                      <Bookmark className="w-3 h-3 fill-stone-900 text-stone-900" />
+                    </button>
+                  </div>
+
+                  {/* Content Area below Image */}
+                  <div className="flex flex-col justify-between flex-1 mt-1">
+                    {/* Two Yellow Hashtag Pills */}
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {(prod.tags || ['# PACKAGING', '# LUXURY']).map((tag, tIdx) => (
+                        <span 
+                          key={tIdx}
+                          className="px-1.5 py-0.5 rounded-md bg-[#FEF3C7] text-[#92400e] text-[8.5px] font-black uppercase tracking-wide inline-block leading-tight"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Bold Product Title */}
+                    <h3 className="font-bold text-[13px] text-stone-900 tracking-tight leading-snug mt-1 truncate">
+                      {prod.name}
+                    </h3>
+
+                    {/* Full-Width View Button with Generous Bottom Padding */}
+                    <div className="mt-2.5 w-full">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          playSoftClick(880, 0.05);
+                          handleSelectCategory(prod.categoryTag);
+                        }}
+                        className="w-full py-2 px-3 rounded-full bg-[#f1f3f7] hover:bg-stone-900 text-stone-900 hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 shrink-0 active:scale-98 pointer-events-auto shadow-2xs group/btn"
+                      >
+                        <span>View</span>
+                        <ArrowRight className="w-3 h-3 text-stone-700 group-hover/btn:text-white transition-colors" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* DESKTOP & TABLET LAYOUT (Original Luxury 3D Widescreen Layout) */}
+                <div className="hidden sm:flex flex-col justify-between h-full w-full">
+                  {/* Spec Tag Pill */}
+                  <div className="inline-flex items-center justify-center gap-1 mx-auto px-2.5 py-0.5 rounded-full bg-stone-100 text-[9px] font-bold text-stone-600 tracking-wider uppercase">
+                    <span>{prod.specPill}</span>
+                  </div>
+
+                  {/* Title & Description (3 lines of rich packaging copy) */}
+                  <div className="my-auto py-1">
+                    <h3 className="font-extrabold text-base md:text-lg text-stone-900 tracking-tight leading-tight group-hover:text-amber-800 transition-colors">
+                      {prod.name}
+                    </h3>
+                    <p className="text-[11px] text-stone-500 leading-snug mt-1 font-medium line-clamp-3">
+                      {prod.desc}
+                    </p>
+                  </div>
+
+                  {/* Action Button - Themed Luxury Dark + Brand Amber Gold Hover */}
+                  <button
+                    onClick={() => {
+                      playSoftClick(880, 0.05);
+                      handleSelectCategory(prod.categoryTag);
+                    }}
+                    className="mt-2 w-full py-2 px-3 rounded-full bg-stone-900 hover:bg-[#FFB51B] text-white hover:text-stone-950 font-bold text-xs transition-all duration-300 shadow-md hover:shadow-xl flex items-center justify-center gap-1.5 active:scale-95 group/btn border border-stone-800 hover:border-[#FFB51B]"
+                  >
+                    <span className="truncate">{prod.ctaText}</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-[#FFB51B] group-hover/btn:text-stone-950 transition-colors group-hover/btn:translate-x-0.5 shrink-0" />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ------------------------------------------------------------- */}
+        {/* CSS 3D PERSPECTIVE SCENE FOR 4 PRODUCT BOXES (Mobile + Desktop) */}
+        {/* ------------------------------------------------------------- */}
+        <div 
+          className="absolute inset-0 z-30 pointer-events-none"
+          style={{ perspective: '1400px', transformStyle: 'preserve-3d' }}
+        >
+          {PRODUCTS.map((p, idx) => (
+            <div
+              key={p.id}
+              ref={(el) => { boxElsRef.current[idx] = el; }}
+              className="absolute left-1/2 top-1/2 w-[220px] h-[220px] sm:w-[310px] sm:h-[310px] -ml-[110px] -mt-[110px] sm:-ml-[155px] sm:-mt-[155px] will-change-transform opacity-0 pointer-events-none select-none transition-shadow duration-300"
+            >
+              <img 
+                src={p.img} 
+                alt={p.name}
+                loading="eager"
+                draggable={false}
+                className="w-full h-full object-contain filter drop-shadow-[0_12px_20px_rgba(0,0,0,0.30)] sm:drop-shadow-[0_25px_30px_rgba(0,0,0,0.68)] hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* ------------------------------------------------------------- */}
         {/* TWO-COLUMN HERO CONTENT (Container Fluid Widescreen) */}
         {/* ------------------------------------------------------------- */}
-        <div className="relative z-10 w-full max-w-[1920px] mx-auto px-3 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 flex-1 flex flex-col justify-start sm:justify-center pt-1 sm:pt-0 pointer-events-none">
+        <div 
+          ref={heroCopyRef}
+          className="relative z-20 w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 flex-1 flex flex-col justify-start pt-8 sm:pt-0 sm:justify-center pointer-events-none transition-opacity duration-300"
+        >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 xl:gap-16 items-center w-full">
             
-            {/* Left Column (40–42% fluid width) - Frosted card on mobile for flawless text contrast */}
+            {/* Left Column (40–42% fluid width) */}
             <div 
               suppressHydrationWarning
-              className="lg:col-span-5 xl:col-span-5 max-w-2xl pointer-events-auto bg-[#0c0a09]/95 sm:bg-transparent backdrop-blur-2xl sm:backdrop-blur-none p-3.5 sm:p-0 rounded-2xl sm:rounded-none border border-white/20 sm:border-0 shadow-2xl sm:shadow-none"
+              className="lg:col-span-5 xl:col-span-5 max-w-xl pointer-events-auto text-left px-1 sm:px-0"
             >
-              
-              {/* Stage Pill */}
-              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-[#FFB51B]/10 border border-[#FFB51B]/30 text-[#FFB51B] text-[10px] sm:text-[11px] font-black tracking-widest uppercase mb-2.5 sm:mb-4 backdrop-blur-md shadow-xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#FFB51B] shadow-[0_0_6px_#FFB51B]"></span>
-                <span className="truncate">{currentStage.badgeText}</span>
+              {/* Heritage Pill */}
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 py-0.5 sm:px-3.5 sm:py-1.5 rounded-full bg-[#FFB51B]/15 border border-[#FFB51B]/40 text-[#FFB51B] text-[9px] sm:text-[11px] font-black tracking-widest uppercase mb-1.5 sm:mb-3 backdrop-blur-md shadow-xs">
+                <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FFB51B] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-[#FFB51B]"></span>
+                </span>
+                <span>EST. 1984 • 42 YRS HERITAGE</span>
               </div>
 
-              {/* Master Headline (Exact Requirement) */}
-              <h1 className="text-2xl sm:text-5xl lg:text-[52px] font-black text-white tracking-tight leading-[1.12] sm:leading-[1.08] mb-2 sm:mb-4 drop-shadow-md">
-                Packaging That <br />
-                Makes Your Brand <br />
+              {/* Headline */}
+              <h1 className="text-[22px] sm:text-4xl lg:text-[46px] font-black text-white tracking-tight leading-[1.12] sm:leading-[1.08] mb-1.5 sm:mb-3 drop-shadow-md">
+                Custom Boxes, <br className="hidden sm:inline" />
+                Made To Be{' '}
                 <span className="relative inline-block text-[#FFB51B]">
-                  Unforgettable.
-                  {/* Subtle Golden Glow Curved Accent */}
+                  Remembered.
                   <svg 
-                    className="absolute -bottom-1.5 left-0 w-full h-2.5 text-[#FFB51B]/80 pointer-events-none" 
+                    className="absolute -bottom-1 left-0 w-full h-2 text-[#FFB51B]/80 pointer-events-none" 
                     viewBox="0 0 200 12" 
                     fill="none" 
                     preserveAspectRatio="none"
                   >
-                    <path 
-                      d="M2 9C50 3 150 2 198 8" 
-                      stroke="currentColor" 
-                      strokeWidth="3.5" 
-                      strokeLinecap="round" 
-                    />
+                    <path d="M2 9C50 3 150 2 198 8" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
                   </svg>
                 </span>
               </h1>
 
-              {/* Description (Exact Requirement) */}
-              <p className="text-xs sm:text-base text-stone-300 font-medium leading-relaxed mb-3 sm:mb-6 max-w-lg line-clamp-2 sm:line-clamp-none drop-shadow-xs">
-                From custom concepts to production-ready packaging. Designed to impress, engineered to protect, and built to scale.
+              {/* Subtitle */}
+              <p className="text-[11px] sm:text-sm text-stone-300 font-medium leading-relaxed mb-2 sm:mb-5 max-w-lg line-clamp-2 sm:line-clamp-none drop-shadow-xs">
+                From custom concepts to production-ready packaging. Designed to impress, engineered to protect, and built to scale across Pakistan.
               </p>
 
-              {/* Information Pills (Exact Requirement) */}
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5 mb-4 sm:mb-7">
-                <div className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/10 text-[11px] sm:text-xs font-semibold text-stone-200 shadow-xs">
-                  <Package className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#FFB51B]" />
+              {/* Information Pills */}
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2.5 sm:mb-5">
+                <div className="inline-flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/10 text-[10px] sm:text-xs font-semibold text-stone-200 shadow-xs">
+                  <Package className="w-3 h-3 text-[#FFB51B]" />
                   <span>No MOQ (From 25)</span>
                 </div>
 
-                <div className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/10 text-[11px] sm:text-xs font-semibold text-stone-200 shadow-xs">
-                  <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#FFB51B]" />
+                <div className="inline-flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/10 text-[10px] sm:text-xs font-semibold text-stone-200 shadow-xs">
+                  <Zap className="w-3 h-3 text-[#FFB51B]" />
                   <span>4–5 Days Express</span>
                 </div>
 
-                <div className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/10 text-[11px] sm:text-xs font-semibold text-stone-200 shadow-xs">
-                  <Gift className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#FFB51B]" />
+                <div className="hidden sm:inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/10 text-[11px] sm:text-xs font-semibold text-stone-200 shadow-xs">
+                  <Gift className="w-3.5 h-3.5 text-[#FFB51B]" />
                   <span>Free Sample Kits</span>
                 </div>
               </div>
 
-              {/* CTA Buttons (Exact Requirement) */}
+              {/* Action Buttons */}
               <div className="flex items-center gap-2 sm:gap-3">
                 <a
                   href="#quote-section"
-                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-4 py-2.5 sm:px-6 sm:py-3.5 rounded-full bg-[#FFB51B] hover:bg-[#ffbe33] text-[#101014] font-black text-xs sm:text-sm transition-all shadow-[0_0_24px_rgba(255,181,27,0.35)] hover:shadow-[0_0_32px_rgba(255,181,27,0.55)] active:scale-98 shrink-0"
+                  onClick={() => playSoftClick(600, 0.05)}
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full bg-[#FFB51B] hover:bg-[#ffbe33] text-[#101014] font-black text-[11px] sm:text-sm transition-all shadow-[0_0_24px_rgba(255,181,27,0.35)] hover:shadow-[0_0_32px_rgba(255,181,27,0.55)] active:scale-98 shrink-0"
                 >
-                  <span>Get Instant Pricing</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-[#101014]" />
+                  <span>Instant Price Calculator</span>
+                  <ArrowRight className="w-3 h-3 text-[#101014]" />
                 </a>
 
                 <a
                   href="#categories-section"
-                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 py-2.5 sm:px-5 sm:py-3.5 rounded-full bg-white/15 backdrop-blur-md text-white border border-white/20 font-bold text-xs sm:text-sm hover:bg-white/25 hover:border-white/35 transition shadow-xs active:scale-98 shrink-0"
+                  onClick={() => playSoftClick(680, 0.05)}
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-full bg-white/15 backdrop-blur-md text-white border border-white/20 font-bold text-[11px] sm:text-sm hover:bg-white/25 hover:border-white/35 transition shadow-xs active:scale-98 shrink-0"
                 >
-                  <Play className="w-3 h-3 fill-white text-white" />
+                  <Play className="w-2.5 h-2.5 fill-white text-white" />
                   <span>Explore 55+ Boxes</span>
                 </a>
               </div>
 
+              {/* Live Trust & Social Proof Bar */}
+              <div className="mt-2.5 sm:mt-4.5 pt-2 sm:pt-3 border-t border-white/10 flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-stone-300">
+                <div className="flex items-center gap-0.5 text-[#FFB51B]">
+                  {'★★★★★'.split('').map((star, sIdx) => (
+                    <span key={sIdx} className="text-[11px]">★</span>
+                  ))}
+                  <span className="font-extrabold text-white ml-1">4.9/5</span>
+                </div>
+                <span className="text-stone-500">•</span>
+                <span className="font-medium text-stone-300">5,000+ Brands</span>
+                <span className="text-stone-500 hidden sm:inline">•</span>
+                <span className="hidden sm:inline-flex items-center gap-1 text-emerald-400 font-semibold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Direct Factory Floor
+                </span>
+              </div>
             </div>
 
-            {/* Right Column (58–60% width area for the 3D Box) */}
+            {/* Right Column (58–60% fluid width area reserved for the 3D Box) */}
             <div className="hidden lg:block lg:col-span-7 xl:col-span-7 h-full pointer-events-none" />
 
           </div>
         </div>
 
         {/* ------------------------------------------------------------- */}
-        {/* BOTTOM INSPECTION CONTROLS (Glassmorphic Unified Panel - Fluid) */}
+        {/* BOTTOM HUD INSPECTION BAR (Container Fluid Widescreen) */}
         {/* ------------------------------------------------------------- */}
-        <div className="relative z-20 mt-auto pb-2.5 sm:pb-4 px-2 sm:px-8 lg:px-12 xl:px-16 max-w-[1920px] mx-auto w-full pointer-events-none">
-          <div className="w-fit max-w-[272px] sm:max-w-5xl mx-auto p-1 sm:p-2.5 rounded-2xl bg-stone-950/95 backdrop-blur-2xl border border-white/20 shadow-2xl shadow-black/80 pointer-events-auto flex items-center justify-center sm:justify-between gap-1.5 sm:gap-3">
+        <div className="relative z-30 mb-16 sm:mb-0 pb-1 sm:pb-4 px-3 sm:px-8 max-w-[1920px] mx-auto w-full pointer-events-none">
+          <div className="w-fit max-w-[340px] sm:max-w-5xl mx-auto p-1 sm:p-2 rounded-2xl bg-stone-950/95 backdrop-blur-2xl border border-white/20 shadow-2xl pointer-events-auto flex items-center justify-between gap-1.5 sm:gap-2">
             
-            {/* Timeline Steps */}
-            <div className="flex items-center gap-1 shrink-0">
+            {/* Stage Progress Tabs */}
+            <div className="flex items-center gap-1">
               {STAGES.map((s, idx) => {
                 const isActive = currentStageIndex === idx;
                 return (
@@ -1080,17 +1503,13 @@ export default function Hero() {
                     key={s.step}
                     onClick={() => scrollToStage(idx)}
                     aria-label={s.label}
-                    className={`px-1.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl text-[10px] sm:text-xs font-bold transition flex items-center gap-1 sm:gap-2 whitespace-nowrap ${
+                    className={`px-1.5 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[10px] sm:text-xs font-bold transition flex items-center gap-1 whitespace-nowrap ${
                       isActive 
                         ? 'bg-[#FFB51B] text-[#101014] font-black shadow-[0_0_16px_rgba(255,181,27,0.4)]' 
                         : 'text-stone-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    {isActive && idx === 3 ? (
-                      <Rotate3d className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#101014]" />
-                    ) : (
-                      <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-[#101014]' : 'bg-stone-500'}`} />
-                    )}
+                    <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-[#101014]' : 'bg-stone-500'}`} />
                     <span className="sm:hidden font-mono font-bold">{s.step}</span>
                     <span className="hidden sm:inline-block">{s.label}</span>
                   </button>
@@ -1099,58 +1518,66 @@ export default function Hero() {
             </div>
 
             {/* Divider */}
-            <div className="w-px h-4 sm:h-6 bg-white/20 shrink-0 mx-0.5 sm:mx-1" />
+            <div className="w-px h-5 bg-white/20 shrink-0" />
 
-            {/* Material Finish Swatches */}
+            {/* 3D Box Material Finish Switcher */}
             <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-              <span className="text-[10px] font-black text-stone-400 uppercase tracking-wider hidden sm:inline-block px-1">
+              <span className="text-[10px] font-black text-stone-400 uppercase tracking-wider hidden md:inline-block px-1">
                 FINISH:
               </span>
 
               <button
                 onClick={() => switchMaterial('kraft')}
-                aria-label="Raw Kraft Finish"
-                className={`p-1.5 sm:px-3 sm:py-1 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border ${
+                className={`p-1 sm:px-2.5 sm:py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 border ${
                   activeTheme === 'kraft'
-                    ? 'bg-[#FFB51B] text-[#101014] border-[#FFB51B] font-black shadow-xs'
+                    ? 'bg-[#FFB51B] text-[#101014] border-[#FFB51B] font-black'
                     : 'bg-white/5 text-stone-300 border-white/10 hover:bg-white/15'
                 }`}
                 title="Raw Kraft Finish"
               >
-                <span className="w-2.5 h-2.5 rounded-full bg-[#c89d67] border border-white/60 shadow-xs" />
-                <span className="hidden sm:inline-block">Raw Kraft</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#c89d67] border border-white/60" />
+                <span className="hidden sm:inline-block text-[11px]">Raw Kraft</span>
               </button>
 
               <button
                 onClick={() => switchMaterial('luxury')}
-                aria-label="Gold Foil Finish"
-                className={`p-1.5 sm:px-3 sm:py-1 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border ${
+                className={`p-1 sm:px-2.5 sm:py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 border ${
                   activeTheme === 'luxury'
-                    ? 'bg-[#FFB51B] text-[#101014] border-[#FFB51B] font-black shadow-xs'
+                    ? 'bg-[#FFB51B] text-[#101014] border-[#FFB51B] font-black'
                     : 'bg-white/5 text-stone-300 border-white/10 hover:bg-white/15'
                 }`}
-                title="Gold Foil Finish"
+                title="Obsidian Gold Foil Finish"
               >
-                <span className="w-2.5 h-2.5 rounded-full bg-[#111215] border border-[#FFB51B] shadow-xs" />
-                <span className="hidden sm:inline-block">Gold Foil</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#111215] border border-[#FFB51B]" />
+                <span className="hidden sm:inline-block text-[11px]">Gold Foil</span>
               </button>
 
               <button
                 onClick={() => switchMaterial('white')}
-                aria-label="Arctic White Finish"
-                className={`p-1.5 sm:px-3 sm:py-1 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border ${
+                className={`p-1 sm:px-2.5 sm:py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 border ${
                   activeTheme === 'white'
-                    ? 'bg-[#FFB51B] text-[#101014] border-[#FFB51B] font-black shadow-xs'
+                    ? 'bg-[#FFB51B] text-[#101014] border-[#FFB51B] font-black'
                     : 'bg-white/5 text-stone-300 border-white/10 hover:bg-white/15'
                 }`}
                 title="Arctic White Finish"
               >
-                <span className="w-2.5 h-2.5 rounded-full bg-white border border-stone-300 shadow-xs" />
-                <span className="hidden sm:inline-block">Arctic White</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-white border border-stone-300" />
+                <span className="hidden sm:inline-block text-[11px]">Arctic White</span>
               </button>
             </div>
 
           </div>
+        </div>
+
+        {/* Scroll Instruction Hint */}
+        <div 
+          ref={scrollHintRef}
+          className="absolute bottom-28 sm:bottom-20 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-center flex flex-col items-center gap-1 opacity-80 transition-opacity"
+        >
+          <span className="text-[10px] sm:text-[11px] font-bold text-stone-300 tracking-wider uppercase font-mono bg-stone-900/80 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-white/10 backdrop-blur-md">
+            Scroll to unbox 3D packaging
+          </span>
+          <ArrowDown className="w-3.5 h-3.5 text-[#FFB51B] animate-bounce" />
         </div>
 
       </div>

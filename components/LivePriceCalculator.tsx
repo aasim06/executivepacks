@@ -6,7 +6,7 @@ import { Calculator, Sparkles, Download, CheckCircle, ArrowRight, ShieldCheck, R
 const CATEGORY_BASE_RATES: Record<string, { name: string; baseRate: number; baseWeight: number }> = {
   'home-kitchen': { name: 'Home & Kitchen Gable Box', baseRate: 0.45, baseWeight: 450 },
   'ecommerce': { name: 'E-Commerce Corrugated Mailer', baseRate: 0.65, baseWeight: 500 },
-  'cartons': { name: 'Heavy-Duty 5-Ply Shipping Carton', baseRate: 1.20, baseWeight: 850 },
+  'cartons': { name: 'Heavy-Duty 5-Ply Corrugated Box', baseRate: 1.20, baseWeight: 850 },
   'jars-bottles': { name: 'Rigid Cylinder Tube with Foam', baseRate: 1.35, baseWeight: 1200 },
   'wooden': { name: 'Artisan Solid Pine Crate', baseRate: 4.80, baseWeight: 3200 },
   'thermocool': { name: 'ThermoCool EPS Thermal Box', baseRate: 2.70, baseWeight: 1400 },
